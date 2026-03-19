@@ -40,7 +40,6 @@
     <script src="{{ URL::asset('backend') }}/is/is.min.js"></script>
     <script src="{{ URL::asset('backend') }}/fontawesome/all.min.js"></script>
     <script src="{{ URL::asset('backend') }}/lodash/lodash.min.js"></script>
-    <script src="{{ URL::asset('backend') }}/list.js/list.min.js"></script>
     <script src="{{ URL::asset('backend') }}/feather-icons/feather.min.js"></script>
     <script src="{{ URL::asset('backend') }}/dayjs/dayjs.min.js"></script>
     <script src="{{ URL::asset('backend') }}/js/phoenix.js"></script>

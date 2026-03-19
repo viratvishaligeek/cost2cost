@@ -3357,7 +3357,7 @@ progress {
   border-color: var(--phoenix-table-border-color);
 }
 .table > :not(caption) > * > * {
-  padding: 1rem 0.5rem;
+  padding: 0.5rem;
   color: var(--phoenix-table-color-state, var(--phoenix-table-color-type, var(--phoenix-table-color)));
   background-color: var(--phoenix-table-bg);
   border-bottom-width: var(--phoenix-border-width);

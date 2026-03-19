@@ -198,21 +198,31 @@
             </div>
         </div>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="{{ URL::asset('backend') }}/popper/popper.min.js"></script>
     <script src="{{ URL::asset('backend') }}/bootstrap/bootstrap.min.js"></script>
     <script src="{{ URL::asset('backend') }}/anchorjs/anchor.min.js"></script>
     <script src="{{ URL::asset('backend') }}/is/is.min.js"></script>
     <script src="{{ URL::asset('backend') }}/fontawesome/all.min.js"></script>
     <script src="{{ URL::asset('backend') }}/lodash/lodash.min.js"></script>
-    <script src="{{ URL::asset('backend') }}/list.js/list.min.js"></script>
     <script src="{{ URL::asset('backend') }}/feather-icons/feather.min.js"></script>
     <script src="{{ URL::asset('backend') }}/dayjs/dayjs.min.js"></script>
-    <script src="{{ URL::asset('backend') }}/leaflet/leaflet.js"></script>
-    <script src="{{ URL::asset('backend') }}/leaflet.markercluster/leaflet.markercluster.js"></script>
-    <script src="{{ URL::asset('backend') }}/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js"></script>
     <script src="{{ URL::asset('backend') }}/js/phoenix.js"></script>
-    <script src="{{ URL::asset('backend') }}/echarts/echarts.min.js"></script>
-    <script src="{{ URL::asset('backend') }}/js/dashboards/ecommerce-dashboard.js"></script>
+    @yield('script')
+    @include('backend.partial.toast')
+    <script>
+        $('#tenantSelector').on('change', function() {
+            let siteId = $(this).val();
+            $.post("{{ route('admin.update_active_site') }}", {
+                _token: "{{ csrf_token() }}",
+                site_id: siteId
+            }, function(response) {
+                if (response.success) {
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

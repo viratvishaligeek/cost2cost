@@ -17,9 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         Admin::create([
             'name' => 'Super Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@gmail.com',
             'phone' => '8888888888',
-            'password' => 'password',
+            'password' => 'qwerty',
+            'site_id' => 0,
         ]);
     }
 }
