@@ -3,12 +3,9 @@
         $tenantList = TenantList();
     @endphp
     <small class="text-muted">Working on Site:</small>
-    <select name="site_id" id="tenantSelector" class="form-select px-3 py-2 border mt-1">
-        <option value="all" {{ is_null(Auth::user()->site_id) ? 'selected' : '' }}>
-            All Sites
-        </option>
+    <select name="tenant_id" id="tenantSelector" class="form-select px-3 py-2 border mt-1">
         @foreach ($tenantList as $tenant)
-            <option value="{{ $tenant->id }}" {{ Auth::user()->site_id == $tenant->id ? 'selected' : '' }}>
+            <option value="{{ $tenant->id }}" {{ Auth::user()->tenant_id == $tenant->id ? 'selected' : '' }}>
                 {{ $tenant->name }}
             </option>
         @endforeach

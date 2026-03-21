@@ -21,17 +21,24 @@ class DashboardController extends Controller
         return view('backend.dashboard', compact('pageName'));
     }
 
-    public function updateActiveSite(Request $request)
+    public function updateActiveTenant(Request $request)
     {
         $user = Auth::user();
-        if ($request->site_id == 'all') {
-            $user->site_id = null;
+        $tenantId = $request->input('tenant_id');
+        if ($tenantId === '0' || $tenantId === 0) {
+            $user->tenant_id = 0;
         } else {
-            $request->validate(['site_id' => 'exists:tenants,id']);
-            $user->site_id = $request->site_id;
+            $request->validate([
+                'tenant_id' => 'required|integer|exists:tenants,id'
+            ]);
+            $user->tenant_id = (int) $tenantId;
         }
         $user->save();
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'tenant_id' => $user->tenant_id,
+            'message' => $user->tenant_id === 0 ? 'Viewing all tenants' : 'Tenant selected successfully'
+        ]);
     }
 
     public function clearCache()

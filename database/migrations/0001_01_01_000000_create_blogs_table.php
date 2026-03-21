@@ -18,12 +18,12 @@ return new class extends Migration
             $table->string('featured_image')->nullable();
             $table->foreignId('author_id');
             $table->foreignId('publisher_id');
-            $table->timestamp('publish_date');
+            $table->date('publish_date');
             $table->string('tags')->nullable();
             $table->string('category_id', 100);
-            $table->string('site_id', 10)->default(0);
+            $table->bigInteger('tenant_id');
             $table->longText('description')->nullable();
-            $table->enum('status', ['draft', 'published', 'archived'])->default('active');
+            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamps();
             $table->softDeletes();
         });

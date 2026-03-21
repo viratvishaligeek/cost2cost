@@ -12,30 +12,37 @@ class SettingController extends Controller
 {
     public function edit($page)
     {
+        $user = Auth::user();
+        $tenantId = $user->tenant_id;
+        if ($tenantId === 0) {
+            if ($page === 'global') {
+                $pageName = 'Global Settings';
+                return view('backend.setting.' . $page, compact('pageName'));
+            }
+            return redirect(route('admin.dashboard'))->with('error', 'Please select a tenant first.');
+        }
+        $tenant = TenantList($tenantId);
+        if (!$tenant) {
+            return redirect(route('admin.dashboard'))->with('error', 'Tenant not found.');
+        }
         if ($page === 'global') {
-            $pageName = 'Global Settings';
-            return view('backend.setting.' . $page, compact('pageName'));
+            return redirect(route('admin.dashboard'))->with('error', 'Global settings are only for super-admin.');
         }
         $capital = ucfirst($page);
-        $tenant = TenantList(Auth::user()->site_id);
-        if (!empty($tenant)) {
-            $pageName = ($tenant->name ?? 'Global') . "'s " . $capital . ' Settings';
-            return view('backend.setting.' . $page, compact('pageName'));
-        }
-
-        return redirect()->back();
+        $pageName = ($tenant->name ?? 'Tenant') . "'s " . $capital . ' Settings';
+        return view('backend.setting.' . $page, compact('pageName'));
     }
 
     public function store(Request $request)
     {
         try {
             $user = Auth::user();
-            $siteId = $request->site_id ?? ($user->site_id ?? 0);
-            foreach ($request->except('_token', 'site_id') as $key => $value) {
+            $tenantId = $request->tenant_id ?? ($user->tenant_id ?? 1);
+            foreach ($request->except('_token', 'tenant_id') as $key => $value) {
                 Setting::updateOrCreate(
                     [
                         'option' => $key,
-                        'site_id' => $siteId,
+                        'tenant_id' => $tenantId,
                     ],
                     [
                         'value' => $value

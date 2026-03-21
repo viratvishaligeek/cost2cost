@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Backend\AdnvanceModule;
+namespace App\Http\Controllers\Backend\AdvanceModule;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;

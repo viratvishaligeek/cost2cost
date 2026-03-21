@@ -5,7 +5,7 @@
         <div class="col-xl-9">
             <form class="row g-3 mb-6" action="{{ route('admin.setting.store') }}" method="post">
                 @csrf
-                <input type="hidden" name="site_id" value="0">
+                <input type="hidden" name="tenant_id" value="0">
                 <div class="col-sm-6 col-md-4">
                     <div class="form-floating">
                         <input class="form-control" id="floatingInputGrid" name="project_name"

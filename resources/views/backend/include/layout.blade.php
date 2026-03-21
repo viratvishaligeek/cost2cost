@@ -212,10 +212,10 @@
     @include('backend.partial.toast')
     <script>
         $('#tenantSelector').on('change', function() {
-            let siteId = $(this).val();
-            $.post("{{ route('admin.update_active_site') }}", {
+            let tenantId = $(this).val();
+            $.post("{{ route('admin.update_active_tenant') }}", {
                 _token: "{{ csrf_token() }}",
-                site_id: siteId
+                tenant_id: tenantId
             }, function(response) {
                 if (response.success) {
                     window.location.reload();

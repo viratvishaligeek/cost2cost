@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Backend\AdnvanceModule\RoleController;
-use App\Http\Controllers\Backend\AdnvanceModule\TeamController;
-use App\Http\Controllers\Backend\AdnvanceModule\TenantController;
+use App\Http\Controllers\Backend\AdvanceModule\RoleController;
+use App\Http\Controllers\Backend\AdvanceModule\TeamController;
+use App\Http\Controllers\Backend\AdvanceModule\TenantController;
 use App\Http\Controllers\Backend\Auth\AuthController;
 use App\Http\Controllers\Backend\Blogger\BlogController;
 use App\Http\Controllers\Backend\Blogger\BlogCategoryController;
@@ -22,7 +22,7 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::controller(DashboardController::class)->group(function () {
             Route::get('dashboard', 'dashboard')->name('dashboard');
             Route::get('clear-cache', 'clearCache')->name('clear_cache');
-            Route::post('update_active_site', 'updateActiveSite')->name('update_active_site');
+            Route::post('update-active-tenant', 'updateActiveTenant')->name('update_active_tenant');
             Route::get('logout', 'logout')->name('logout');
         });
 

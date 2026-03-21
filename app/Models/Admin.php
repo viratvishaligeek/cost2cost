@@ -22,7 +22,7 @@ class Admin extends Authenticatable
         'name',
         'phone',
         'email',
-        'site_id',
+        'tenant_id',
         'password',
         'status',
     ];
@@ -45,6 +45,7 @@ class Admin extends Authenticatable
     protected function casts(): array
     {
         return [
+            'tenant_id' => 'integer',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

@@ -16,6 +16,7 @@ class Blog extends Model
      *
      * @var list<string>
      */
+
     protected $fillable = [
         'name',
         'slug',
@@ -25,9 +26,26 @@ class Blog extends Model
         'publish_date',
         'tags',
         'category_id',
-        'site_id',
+        'tenant_id',
         'description',
         'status',
 
     ];
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+    public function category()
+    {
+        return $this->belongsTo(BlogCategory::class, 'category_id');
+    }
+    public function author()
+    {
+        return $this->belongsTo(Admin::class, 'author_id');
+    }
+
+    public function publisher()
+    {
+        return $this->belongsTo(Admin::class, 'publisher_id');
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Backend\AdnvanceModule;
+namespace App\Http\Controllers\Backend\AdvanceModule;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -90,15 +90,12 @@ class TeamController extends Controller
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'string', 'max:50', 'email', 'unique:admins,email'],
             'phone'    => ['required', 'numeric', 'digits:10', 'unique:admins,phone'],
-            'site_id'  => ['nullable'],
+            'tenant_id'  => ['required', 'exists:tenants,id'],
             'status'   => ['required', 'in:active,inactive'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
         try {
             DB::beginTransaction();
-            if (!$request['site_id']) {
-                $validated['site_id'] = 0;
-            }
             Admin::create($validated);
             DB::commit();
             return redirect()->route('admin.team.index')->with('success', 'Team member added successfully');
@@ -139,7 +136,7 @@ class TeamController extends Controller
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'string', 'max:50', 'email', 'unique:admins,email,' . $team->id],
             'phone'    => ['required', 'numeric', 'digits:10', 'unique:admins,phone,' . $team->id],
-            'site_id'  => ['nullable'],
+            'tenant_id'  => ['nullable'],
             'status'   => ['required', 'in:active,inactive'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
         ]);
@@ -149,8 +146,8 @@ class TeamController extends Controller
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);
             }
-            if (!$request->filled('site_id')) {
-                $data['site_id'] = 0;
+            if (!$request->filled('tenant_id')) {
+                $data['tenant_id'] = 0;
             }
             $team->update($data);
             DB::commit();

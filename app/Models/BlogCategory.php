@@ -22,6 +22,20 @@ class BlogCategory extends Model
         'featured_image',
         'description',
         'status',
-        'site_id'
+        'tenant_id'
     ];
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Blog::class, 'category_id');
+    }
+    public function postsCount()
+    {
+        return $this->hasMany(Blog::class, 'category_id')->count();
+    }
 }

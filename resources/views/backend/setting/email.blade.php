@@ -5,19 +5,19 @@
         <div class="col-xl-9">
             <form class="row g-3 mb-6" action="{{ route('admin.setting.store') }}" method="post">
                 @csrf
-                <input type="hidden" name="site_id" value="{{ Auth::user()->site_id }}">
+                <input type="hidden" name="tenant_id" value="{{ Auth::user()->tenant_id }}">
                 <div class="col-sm-6 col-md-4">
                     <div class="form-floating">
-                        <input class="form-control" id="floatingInputGrid" name="site_title"
-                            value="{{ old('site_title') ?? GlobalSetting('site_title', Auth::user()->site_id) }}"
+                        <input class="form-control" id="floatingInputGrid" name="tenant_title"
+                            value="{{ old('tenant_title') ?? GlobalSetting('tenant_title', Auth::user()->tenant_id) }}"
                             type="text" placeholder="Site Title" />
                         <label for="floatingInputGrid">Site Name</label>
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-4">
                     <div class="form-floating">
-                        <input class="form-control" id="floatingInputGrid" name="site_description"
-                            value="{{ old('site_description') ?? GlobalSetting('site_description', Auth::user()->site_id) }}"
+                        <input class="form-control" id="floatingInputGrid" name="tenant_description"
+                            value="{{ old('tenant_description') ?? GlobalSetting('tenant_description', Auth::user()->tenant_id) }}"
                             type="text" placeholder="Site Description" />
                         <label for="floatingInputGrid">Site Description</label>
                     </div>

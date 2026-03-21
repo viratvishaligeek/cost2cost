@@ -28,7 +28,7 @@
                 <div class="col-sm-6 col-md-4">
                     <div class="form-floating">
                         <input class="form-control" id="floatingInputGrid" disabled
-                            value="{{ TenantList($data->site_id)->name }}" placeholder="password_confirmation" />
+                            value="{{ TenantList($data->tenant_id)->name }}" placeholder="password_confirmation" />
                         <label for="floatingSelectPrivacy">Assign Tenant Access</label>
                     </div>
                 </div>

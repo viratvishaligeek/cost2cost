@@ -44,11 +44,11 @@
                 </div>
                 <div class="col-sm-6 col-md-4">
                     <div class="form-floating">
-                        <select class="form-select" name="site_id" id="floatingSelectPrivacy">
+                        <select class="form-select" name="tenant_id" id="floatingSelectPrivacy">
                             <option selected="selected" disabled>Select Tenant</option>
                             @foreach ($tenants as $tenant)
                                 <option value="{{ $tenant->id }}"
-                                    {{ old('site_id') ?? $data->site_id == $tenant->id ? 'selected' : '' }}>
+                                    {{ old('tenant_id') ?? $data->tenant_id == $tenant->id ? 'selected' : '' }}>
                                     {{ $tenant->name }}</option>
                             @endforeach
                         </select>
