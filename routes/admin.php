@@ -4,9 +4,13 @@ use App\Http\Controllers\Backend\AdvanceModule\RoleController;
 use App\Http\Controllers\Backend\AdvanceModule\TeamController;
 use App\Http\Controllers\Backend\AdvanceModule\TenantController;
 use App\Http\Controllers\Backend\Auth\AuthController;
-use App\Http\Controllers\Backend\Blogger\BlogController;
 use App\Http\Controllers\Backend\Blogger\BlogCategoryController;
+use App\Http\Controllers\Backend\Blogger\BlogController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\Product\BrandController;
+use App\Http\Controllers\Backend\Product\CategoryController;
+use App\Http\Controllers\Backend\Product\OptionController;
+use App\Http\Controllers\Backend\Product\OptionValueController;
 use App\Http\Controllers\Backend\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,12 +35,18 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::resource('team', TeamController::class);
         Route::resource('role', RoleController::class);
 
-        // advance module routes
+        // setting module routes
         Route::resource('setting', SettingController::class);
 
-        // advance module routes
+        // blogging module routes
         Route::resource('blog-category', BlogCategoryController::class);
         Route::resource('blog', BlogController::class);
+
+        // product module routes
+        Route::resource('category', CategoryController::class);
+        Route::resource('brand', BrandController::class);
+        Route::resource('options', OptionController::class);
+        Route::resource('option-value', OptionValueController::class);
     });
 
     // ------------- laravel file manager
