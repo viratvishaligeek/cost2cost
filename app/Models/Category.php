@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Blog extends Model
+class Category extends Model
 {
     use BelongsToTenant, HasFactory, SoftDeletes;
 
@@ -19,13 +19,10 @@ class Blog extends Model
     protected $fillable = [
         'name',
         'slug',
-        'featured_image',
-        'author_id',
-        'publisher_id',
-        'publish_date',
-        'tags',
-        'category_id',
+        'parent_id',
         'tenant_id',
+        'is_parent',
+        'featured_image',
         'description',
         'status',
 
@@ -36,26 +33,30 @@ class Blog extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
-    public function category()
+    public function parent()
     {
-        return $this->belongsTo(BlogCategory::class, 'category_id');
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    public function author()
+    public function children()
     {
-        return $this->belongsTo(Admin::class, 'author_id');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
-    public function publisher()
-    {
-        return $this->belongsTo(Admin::class, 'publisher_id');
-    }
+    // public function products()
+    // {
+    //     return $this->hasMany(Product::class, 'category_id');
+    // }
+
+    // public function productCount()
+    // {
+    //     return $this->hasMany(Product::class, 'category_id')->count();
+    // }
 
     protected $hidden = [
         'tenant_id',
         'created_at',
         'updated_at',
         'deleted_at',
-
     ];
 }

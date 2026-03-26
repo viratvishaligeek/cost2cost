@@ -11,19 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('name', 150);
+            $table->string('slug', 150)->unique();
             $table->string('featured_image')->nullable();
-            $table->foreignId('author_id');
-            $table->foreignId('publisher_id');
-            $table->date('publish_date');
-            $table->longText('tags')->nullable();
-            $table->string('category_id', 100);
-            $table->bigInteger('tenant_id');
             $table->longText('description')->nullable();
-            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->bigInteger('tenant_id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -34,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blogs');
+        Schema::dropIfExists('brands');
     }
 };

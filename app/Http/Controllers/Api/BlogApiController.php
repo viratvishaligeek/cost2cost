@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Product;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
-class ProductController extends Controller
+class BlogApiController extends Controller
 {
     private function decryptId($id)
     {
@@ -31,33 +31,35 @@ class ProductController extends Controller
             if (! $request->has('order')) {
                 $query->latest();
             }
+
             return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
+                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
             })->editColumn('category', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->category->name . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->category->name.'</p>';
             })->editColumn('tenant', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
             })->editColumn('author', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->author->name . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->author->name.'</p>';
             })->editColumn('publisher', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->publisher->name . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->publisher->name.'</p>';
             })->editColumn('status', function ($row) {
                 return GetStatusBadge($row->status);
             })->editColumn('created_at', function ($row) {
                 return $row->created_at->format('d, M Y, H:i A');
             })->addColumn('action', function ($row) {
                 $id = encrypt($row->id);
+
                 return '
                     <div class="d-flex">
-                        <a href="' . route('admin.blog.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
+                        <a href="'.route('admin.blog.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
                             <span class="fas fa-eye"></span>
                         </a>
-                        <a href="' . route('admin.blog.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
+                        <a href="'.route('admin.blog.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
-                        <form method="POST" action="' . route('admin.blog.destroy', $id) . '" class="m-0 p-0 delete-form">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
+                        <form method="POST" action="'.route('admin.blog.destroy', $id).'" class="m-0 p-0 delete-form">
+                            '.csrf_field().'
+                            '.method_field('DELETE').'
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
@@ -75,6 +77,7 @@ class ProductController extends Controller
         $categories = BlogCategory::get();
         $authors = Admin::where('id', '!=', 1)->get();
         $publishers = Admin::where('id', '!=', 1)->get();
+
         return view('backend.blog.create', compact('pageName', 'categories', 'authors', 'publishers'));
     }
 
@@ -89,18 +92,19 @@ class ProductController extends Controller
             'status' => ['required'],
             'description' => ['nullable'],
             'tags' => ['nullable'],
-            'publish_date' => ['required', 'date']
+            'publish_date' => ['required', 'date'],
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
             Blog::create($validated);
             DB::commit();
+
             return redirect()->route('admin.blog.index')->with('success', 'Blog created successfully');
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
@@ -108,6 +112,7 @@ class ProductController extends Controller
     {
         $pageName = 'Blog Details';
         $data = Blog::findOrFail($this->decryptId($id));
+
         return view('backend.blog.show', [
             'pageName' => $pageName,
             'data' => $data,
@@ -137,17 +142,19 @@ class ProductController extends Controller
             'status' => ['required'],
             'description' => ['nullable'],
             'tags' => ['nullable'],
-            'publish_date' => ['required', 'date']
+            'publish_date' => ['required', 'date'],
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
             $blog->update($validated);
             DB::commit();
+
             return redirect()->route('admin.blog.index')->with('success', 'Blog updated successfully');
         } catch (\Exception $th) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 

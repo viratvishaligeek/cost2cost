@@ -151,7 +151,7 @@
                     searchable: false
                 }
             ];
-            initializeDataTable('#dataTable', "{{ route('admin.blog.index') }}", columns, 'Team Members');
+            initializeDataTable('#dataTable', "{{ route('admin.blog.index') }}", columns, 'Blogs');
         });
     </script>
 @endsection

@@ -21,14 +21,17 @@ class Tenant extends Model
         'status',
         'notes',
     ];
+
     public function blogs()
     {
         return $this->hasMany(Blog::class, 'tenant_id');
     }
+
     public function blogCategories()
     {
         return $this->hasMany(BlogCategory::class, 'tenant_id');
     }
+
     public function teams()
     {
         return $this->hasMany(Admin::class, 'tenant_id');

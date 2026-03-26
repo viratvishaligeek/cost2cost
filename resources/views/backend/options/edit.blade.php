@@ -3,38 +3,15 @@
     <h2 class="mb-4">{{ $pageName }}</h2>
     <div class="row">
         <div class="col-xl-9">
-            <form class="row g-3 mb-6" action="{{ route('admin.blog-category.update', encrypt($data->id)) }}" method="post">
+            <form class="row g-3 mb-6" action="{{ route('admin.options.update', encrypt($data->id)) }}" method="post">
                 @csrf
                 @method('PATCH')
-                <div class="col-sm-12 col-md-12">
+                <div class="col-sm-6 col-md-6">
                     <div class="form-floating">
                         <input class="form-control" id="floatingInputGrid" name="name"
                             value="{{ old('name') ?? $data->name }}" type="text" placeholder="name" required />
                         <label for="floatingInputGrid">Name</label>
                     </div>
-                </div>
-                <div class="col-sm-12 col-md-12">
-                    <div class="form-floating">
-                        <textarea name="description" class="form-control" id="description"
-                            placeholder="Paste html or design your page manually.">{{ old('description') ?? $data->description }}</textarea>
-                    </div>
-                </div>
-                <div class="col-sm-4 col-md-4">
-                    <label for="name"> Featured Image</label>
-                    <div class="input-group">
-                        <span class="input-group-btn">
-                            <a id="featured" data-input="featured_thumbnail" data-preview="featured_holder"
-                                class="btn btn-warning text-white">
-                                <i class="fa fa-image"></i> Choose
-                            </a>
-                        </span>
-                        <input id="featured_thumbnail" class="form-control" type="text" name="featured_image"
-                            value="{{ old('featured_image') ?? $data->featured_image }}">
-                    </div>
-                </div>
-                <div class="col-md-2" id="featured_holder">
-                    <label for="name"> Preview</label>
-                    <img src="{{ old('featured_image') ?? $data->featured_image }}" alt="" width="100%">
                 </div>
                 <div class="col-sm-6 col-md-6">
                     <div class="form-floating">
@@ -42,8 +19,7 @@
                             <option selected="selected" disabled>Select status</option>
                             <option value="active" {{ old('status') ?? $data->status == 'active' ? 'selected' : '' }}>Active
                             </option>
-                            <option value="inactive" {{ old('status') ?? $data->status == 'inactive' ? 'selected' : '' }}>
-                                In
+                            <option value="inactive" {{ old('status') ?? $data->status == 'inactive' ? 'selected' : '' }}>In
                                 Active</option>
                         </select>
                         <label for="floatingSelectPrivacy">Status</label>
@@ -52,8 +28,7 @@
                 <div class="col-12 gy-6">
                     <div class="row g-3 justify-content-end">
                         <div class="col-auto">
-                            <a href="{{ route('admin.blog-category.index') }}"
-                                class="btn btn-phoenix-primary px-5">Cancel</a>
+                            <a href="{{ route('admin.options.index') }}" class="btn btn-phoenix-primary px-5">Cancel</a>
                         </div>
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary px-5 px-sm-15">Update</button>

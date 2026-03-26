@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Backend\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
-use App\Models\Blog;
-use App\Models\BlogCategory;
+use App\Models\Option;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,90 +23,82 @@ class OptionController extends Controller
 
     public function index(Request $request)
     {
-        $pageName = 'Blog List';
+        $pageName = 'Product Option List';
         if ($request->ajax()) {
-            $query = Blog::query();
+            $query = Option::query();
             if (! $request->has('order')) {
                 $query->latest();
             }
-            return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
-            })->editColumn('category', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->category->name . '</p>';
-            })->editColumn('tenant', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
-            })->editColumn('author', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->author->name . '</p>';
-            })->editColumn('publisher', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->publisher->name . '</p>';
-            })->editColumn('status', function ($row) {
-                return GetStatusBadge($row->status);
-            })->editColumn('created_at', function ($row) {
-                return $row->created_at->format('d, M Y, H:i A');
-            })->addColumn('action', function ($row) {
-                $id = encrypt($row->id);
-                return '
+
+            return DataTables::eloquent($query)
+                ->addIndexColumn()->editColumn('name', function ($row) {
+                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                })->editColumn('tenant', function ($row) {
+                    return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
+                })->editColumn('values', function ($row) {
+                    return '<p class="text-sm mb-0 text-capitalize">'.$row->values.'</p>';
+                })->editColumn('status', function ($row) {
+                    return GetStatusBadge($row->status);
+                })->editColumn('created_at', function ($row) {
+                    return $row->created_at->format('d, M Y, H:i A');
+                })->addColumn('action', function ($row) {
+                    $id = encrypt($row->id);
+
+                    return '
                     <div class="d-flex">
-                        <a href="' . route('admin.blog.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
+                        <a href="'.route('admin.options.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
                             <span class="fas fa-eye"></span>
                         </a>
-                        <a href="' . route('admin.blog.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
+                        <a href="'.route('admin.options.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
-                        <form method="POST" action="' . route('admin.blog.destroy', $id) . '" class="m-0 p-0 delete-form">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
+                        <form method="POST" action="'.route('admin.options.destroy', $id).'" class="m-0 p-0 delete-form">
+                            '.csrf_field().'
+                            '.method_field('DELETE').'
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
                         </form>
                     </div>';
-            })->rawColumns(['name', 'author', 'publisher', 'category', 'tenant', 'status', 'action'])->make(true);
+                })->rawColumns(['name', 'values', 'tenant', 'status', 'action'])->make(true);
         }
 
-        return view('backend.blog.index', compact('pageName'));
+        return view('backend.options.index', compact('pageName'));
     }
 
     public function create()
     {
-        $pageName = 'Create Blog Post';
-        $categories = BlogCategory::get();
-        $authors = Admin::where('id', '!=', 1)->get();
-        $publishers = Admin::where('id', '!=', 1)->get();
-        return view('backend.blog.create', compact('pageName', 'categories', 'authors', 'publishers'));
+        $pageName = 'Create Product Option';
+
+        return view('backend.options.create', compact('pageName'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'category_id' => ['required', 'integer', 'exists:blog_categories,id'],
-            'author_id' => ['required', 'integer', 'exists:admins,id'],
-            'publisher_id' => ['required', 'integer', 'exists:admins,id'],
-            'featured_image' => ['required'],
             'status' => ['required'],
-            'description' => ['nullable'],
-            'tags' => ['nullable'],
-            'publish_date' => ['required', 'date']
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
-            Blog::create($validated);
+            Option::create($validated);
             DB::commit();
-            return redirect()->route('admin.blog.index')->with('success', 'Blog created successfully');
+
+            return redirect()->route('admin.options.index')->with('success', 'Product Option created successfully');
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
     public function show($id)
     {
-        $pageName = 'Blog Details';
-        $data = Blog::findOrFail($this->decryptId($id));
-        return view('backend.blog.show', [
+        $pageName = 'Product Option Detail';
+        $data = Option::findOrFail($this->decryptId($id));
+
+        return view('backend.options.show', [
             'pageName' => $pageName,
             'data' => $data,
         ]);
@@ -116,48 +106,40 @@ class OptionController extends Controller
 
     public function edit($id)
     {
-        $pageName = 'Edit Blog Post';
-        $data = Blog::findOrFail($this->decryptId($id));
-        $categories = BlogCategory::get();
-        $authors = Admin::where('id', '!=', 1)->get();
-        $publishers = Admin::where('id', '!=', 1)->get();
+        $pageName = 'Edit Product Option';
+        $data = Option::findOrFail($this->decryptId($id));
 
-        return view('backend.blog.edit', compact('pageName', 'data', 'categories', 'authors', 'publishers'));
+        return view('backend.options.edit', compact('pageName', 'data'));
     }
 
     public function update(Request $request, $id)
     {
-        $blog = Blog::findOrFail($this->decryptId($id));
+        $option = Option::findOrFail($this->decryptId($id));
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'category_id' => ['required', 'integer', 'exists:blog_categories,id'],
-            'author_id' => ['required', 'integer', 'exists:admins,id'],
-            'publisher_id' => ['required', 'integer', 'exists:admins,id'],
-            'featured_image' => ['required'],
             'status' => ['required'],
-            'description' => ['nullable'],
-            'tags' => ['nullable'],
-            'publish_date' => ['required', 'date']
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
-            $blog->update($validated);
+            $option->update($validated);
             DB::commit();
-            return redirect()->route('admin.blog.index')->with('success', 'Blog updated successfully');
+
+            return redirect()->route('admin.options.index')->with('success', 'Option updated successfully');
         } catch (\Exception $th) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
     public function destroy($id)
     {
-        $data = Blog::findOrFail($this->decryptId($id));
+        $data = Option::findOrFail($this->decryptId($id));
         $data->delete();
 
         return redirect()
-            ->route('admin.blog.index')
-            ->with('success', 'Blog deleted successfully');
+            ->route('admin.options.index')
+            ->with('success', 'Option deleted successfully');
     }
 }

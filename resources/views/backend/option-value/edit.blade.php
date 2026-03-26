@@ -3,7 +3,7 @@
     <h2 class="mb-4">{{ $pageName }}</h2>
     <div class="row">
         <div class="col-xl-9">
-            <form class="row g-3 mb-6" action="{{ route('admin.blog-category.update', encrypt($data->id)) }}" method="post">
+            <form class="row g-3 mb-6" action="{{ route('admin.brand.update', encrypt($data->id)) }}" method="post">
                 @csrf
                 @method('PATCH')
                 <div class="col-sm-12 col-md-12">
@@ -19,7 +19,7 @@
                             placeholder="Paste html or design your page manually.">{{ old('description') ?? $data->description }}</textarea>
                     </div>
                 </div>
-                <div class="col-sm-4 col-md-4">
+                <div class="col-sm-2 col-md-2">
                     <label for="name"> Featured Image</label>
                     <div class="input-group">
                         <span class="input-group-btn">
@@ -32,7 +32,7 @@
                             value="{{ old('featured_image') ?? $data->featured_image }}">
                     </div>
                 </div>
-                <div class="col-md-2" id="featured_holder">
+                <div class="col-md-4" id="featured_holder">
                     <label for="name"> Preview</label>
                     <img src="{{ old('featured_image') ?? $data->featured_image }}" alt="" width="100%">
                 </div>
@@ -52,8 +52,7 @@
                 <div class="col-12 gy-6">
                     <div class="row g-3 justify-content-end">
                         <div class="col-auto">
-                            <a href="{{ route('admin.blog-category.index') }}"
-                                class="btn btn-phoenix-primary px-5">Cancel</a>
+                            <a href="{{ route('admin.brand.index') }}" class="btn btn-phoenix-primary px-5">Cancel</a>
                         </div>
                         <div class="col-auto">
                             <button type="submit" class="btn btn-primary px-5 px-sm-15">Update</button>

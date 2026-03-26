@@ -6,7 +6,7 @@
                 <a href="{{ route('admin.dashboard') }}">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="">Blogging</a>
+                <a href="">Product Module</a>
             </li>
             <li class="breadcrumb-item active">{{ $pageName }}</li>
         </ol>
@@ -67,8 +67,7 @@
                         <a class="dropdown-item export-pdf" href="#!">PDF</a>
                         <a class="dropdown-item export-print" href="#!">Print</a>
                     </div>
-                    <a href="{{ route('admin.blog-category.create') }}" class="btn btn-primary"> <span
-                            class="fas fa-plus me-2">
+                    <a href="{{ route('admin.brand.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
                         </span> Add</a>
                 </div>
             </div>
@@ -81,8 +80,8 @@
                         <tr>
                             <th class="white-space-nowrap align-middle fs-9 ">Sr. No</th>
                             <th class="white-space-nowrap align-middle">Name</th>
+                            <th class="white-space-nowrap align-middle ">Product Count</th>
                             <th class="white-space-nowrap align-middle ">Tenant </th>
-                            <th class="white-space-nowrap align-middle ">Post Count</th>
                             <th class="white-space-nowrap align-middle ">Status</th>
                             <th class="white-space-nowrap align-middle ">Created At</th>
                             <th class="white-space-nowrap align-middle ">Action </th>
@@ -112,17 +111,17 @@
                     name: 'name'
                 },
                 {
+                    data: 'product_count',
+                    name: 'product_count',
+                    orderable: false,
+                    searchable: false
+
+                },
+                {
                     data: 'tenant',
                     name: 'tenant',
                     orderable: false,
                     searchable: false
-                },
-                {
-                    data: 'post_count',
-                    name: 'post_count',
-                    orderable: false,
-                    searchable: false
-
                 },
                 {
                     data: 'status',
@@ -139,8 +138,7 @@
                     searchable: false
                 }
             ];
-            initializeDataTable('#dataTable', "{{ route('admin.blog-category.index') }}", columns,
-                'Blog Categories');
+            initializeDataTable('#dataTable', "{{ route('admin.brand.index') }}", columns, 'Brands List');
         });
     </script>
 @endsection

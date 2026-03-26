@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\Product\OptionController;
 use App\Http\Controllers\Backend\Product\OptionValueController;
 use App\Http\Controllers\Backend\SettingController;
 use Illuminate\Support\Facades\Route;
+use UniSharp\LaravelFilemanager\Lfm;
 
 // Auth routes
 Route::prefix('admin')->as('admin.')->group(function () {
@@ -43,14 +44,14 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::resource('blog', BlogController::class);
 
         // product module routes
-        Route::resource('category', CategoryController::class);
         Route::resource('brand', BrandController::class);
+        Route::resource('category', CategoryController::class);
         Route::resource('options', OptionController::class);
         Route::resource('option-value', OptionValueController::class);
     });
 
     // ------------- laravel file manager
     Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['auth:admin']], function () {
-        \UniSharp\LaravelFilemanager\Lfm::routes();
+        Lfm::routes();
     });
 });

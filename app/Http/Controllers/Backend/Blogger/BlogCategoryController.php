@@ -31,11 +31,11 @@ class BlogCategoryController extends Controller
             }
 
             return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
+                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
             })->editColumn('tenant', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name ?? '' . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name ?? ''.'</p>';
             })->editColumn('post_count', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">' . $row->postsCount() . '</p>';
+                return '<p class="text-sm mb-0 text-capitalize">'.$row->postsCount().'</p>';
             })->editColumn('status', function ($row) {
                 return GetStatusBadge($row->status);
             })->editColumn('created_at', function ($row) {
@@ -45,15 +45,15 @@ class BlogCategoryController extends Controller
 
                 return '
                     <div class="d-flex">
-                        <a href="' . route('admin.blog-category.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
+                        <a href="'.route('admin.blog-category.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
                             <span class="fas fa-eye"></span>
                         </a>
-                        <a href="' . route('admin.blog-category.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
+                        <a href="'.route('admin.blog-category.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
-                        <form method="POST" action="' . route('admin.blog-category.destroy', $id) . '" class="m-0 p-0 delete-form">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
+                        <form method="POST" action="'.route('admin.blog-category.destroy', $id).'" class="m-0 p-0 delete-form">
+                            '.csrf_field().'
+                            '.method_field('DELETE').'
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
@@ -61,12 +61,14 @@ class BlogCategoryController extends Controller
                     </div>';
             })->rawColumns(['name', 'tenant', 'post_count', 'status', 'action'])->make(true);
         }
+
         return view('backend.blog-category.index', compact('pageName'));
     }
 
     public function create()
     {
         $pageName = 'Create Blog Category';
+
         return view('backend.blog-category.create', compact('pageName'));
     }
 
@@ -74,14 +76,13 @@ class BlogCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'featured' => ['required'],
+            'featured_image' => ['nullable'],
             'status' => ['required'],
             'description' => ['nullable'],
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
-            $validated['featured_image'] = $validated['featured'];
             BlogCategory::create($validated);
             DB::commit();
 
@@ -89,7 +90,7 @@ class BlogCategoryController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 
@@ -120,20 +121,21 @@ class BlogCategoryController extends Controller
         $blogCat = BlogCategory::findOrFail($this->decryptId($id));
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'featured' => ['required'],
+            'featured_image' => ['nullable'],
             'status' => ['required'],
             'description' => ['nullable'],
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
-            $validated['featured_image'] = $validated['featured'];
             $blogCat->update($validated);
             DB::commit();
+
             return redirect()->route('admin.blog-category.index')->with('success', 'Blog Category updated successfully');
         } catch (\Exception $th) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+
+            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
         }
     }
 

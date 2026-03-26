@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlogCategory extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToTenant;
+    use BelongsToTenant, HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class BlogCategory extends Model
         'featured_image',
         'description',
         'status',
-        'tenant_id'
+        'tenant_id',
     ];
 
     public function tenant()
@@ -34,8 +34,16 @@ class BlogCategory extends Model
     {
         return $this->hasMany(Blog::class, 'category_id');
     }
+
     public function postsCount()
     {
         return $this->hasMany(Blog::class, 'category_id')->count();
     }
+
+    protected $hidden = [
+        'tenant_id',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 }

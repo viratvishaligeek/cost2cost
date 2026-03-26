@@ -1,6 +1,8 @@
 <?php
 
 return [
+
+    // dashboard menu
     [
         'title' => 'Dashboard',
         'icon' => 'fa-solid fa-gauge',
@@ -9,6 +11,7 @@ return [
         'can' => [],
     ],
 
+    // advance module menu
     [
         'title' => 'Advance Module',
         'icon' => 'fa-solid fa-layer-group',
@@ -39,6 +42,74 @@ return [
         ],
     ],
 
+    // blogging module menu
+    [
+        'title' => 'Blogging',
+        'icon' => 'fa-solid fa-blog',
+        'can' => [],
+        'children' => [
+            [
+                'name' => 'Catgeory',
+                'route' => 'admin.blog-category.index',
+                'active' => 'admin.blog-category.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Post',
+                'route' => 'admin.blog.index',
+                'active' => 'admin.blog.*',
+                'can' => [],
+            ],
+        ],
+    ],
+
+    // product module menu
+    [
+        'title' => 'Products',
+        'icon' => 'fa-solid fa-box-open',
+        'can' => [],
+
+        'children' => [
+            [
+                'name' => 'Brands',
+                'route' => 'admin.brand.index',
+                'active' => 'admin.brand.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Category',
+                'route' => 'admin.category.index',
+                'active' => 'admin.category.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Product Option',
+                'route' => 'admin.options.index',
+                'active' => 'admin.options.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Option Value',
+                'route' => 'admin.option-value.index',
+                'active' => 'admin.option-value.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Products',
+                'route' => 'admin.option-value.index',
+                'active' => 'admin.option-value.*',
+                'can' => [],
+            ],
+            [
+                'name' => 'Low Stock Products',
+                'route' => 'admin.option-value.index',
+                'active' => 'admin.option-value.*',
+                'can' => [],
+            ],
+        ],
+    ],
+
+    // setting module menu
     [
         'title' => 'Setting',
         'icon' => 'fa-solid fa-gear',
@@ -75,37 +146,12 @@ return [
             ],
         ],
     ],
-    [
-        'title' => 'Blogging',
-        'icon' => 'fa-solid fa-blog',
-        'can' => [],
-        'children' => [
-            [
-                'name' => 'Catgeory',
-                'route' => 'admin.blog-category.index',
-                'active' => 'admin.blog-category.index',
-                'can' => [],
-            ],
-            [
-                'name' => 'Post',
-                'route' => 'admin.blog.index',
-                'active' => 'admin.blog.index',
-                'can' => [],
-            ],
-        ],
-    ],
 
+    // logout menu
     [
-        'title' => 'Members',
-        'icon' => 'fa-solid fa-user',
-        'url' => '',
-        'can' => [],
-    ],
-
-    [
-        'title' => 'Timeline',
-        'icon' => 'fa-solid fa-clock',
-        'url' => '',
+        'title' => 'Logout',
+        'icon' => 'fa-solid fa-sign-out',
+        'route' => 'admin.logout',
         'can' => [],
     ],
 ];

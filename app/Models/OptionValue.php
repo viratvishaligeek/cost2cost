@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Setting extends Model
+class OptionValue extends Model
 {
-    use BelongsToTenant, HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -16,18 +16,18 @@ class Setting extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'option',
-        'value',
-        'tenant_id',
-
+        'name',
+        'option_id',
     ];
 
-    public function tenant()
+    public function option()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        return $this->belongsTo(Option::class, 'option_id');
     }
 
     protected $hidden = [
-        'tenant_id',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }
