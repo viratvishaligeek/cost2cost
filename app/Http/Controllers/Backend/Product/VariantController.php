@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
-class ProductController extends Controller
+class VariantController extends Controller
 {
     private function decryptId($id)
     {
@@ -70,11 +70,62 @@ class ProductController extends Controller
     public function create()
     {
         $pageName = 'Create Product';
+        //  try {
+        //             $product = Product::findOrFail($id);
+        //             $allOptions = Option::with('values')->get();
+        //             $optionIds = $product->variants->pluck('options.*.pivot.option_id')->flatten()->unique();
+        //             $options = Option::with('values')->whereIn('id', $optionIds)->get();
+        //             $product->load('variants.options.values');
 
+        //             return view('products.partials.addVariants', compact('product', 'allOptions', 'options'));
+        //         } catch (Exception $e) {
+        //             return redirect(route('admin.product.index'))->with('error', 'Product not found');
+        //         }
         return view('backend.product.create', compact('pageName'));
     }
 
     public function store(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'product_id' => 'required|exists:products,id',
+    //         'variants' => 'required|array',
+    //         'variants.*.options' => 'required|array',
+    //         'variants.*.options.*' => 'required|exists:option_values,id', // Validate each option value exists
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json(['status' => 0, 'message' => $validator->errors()->first()]);
+    //     }
+    //     try {
+    //         $product = Product::findOrFail($request->product_id);
+    //         if ($request->has('variants')) {
+    //             foreach ($request->variants as $variantData) {
+    //                 $optionValues = [];
+    //                 foreach ($variantData['options'] as $valueId) {
+    //                     $optionValue = OptionValue::find($valueId);
+    //                     if ($optionValue) {
+    //                         $optionValues[] = $optionValue->value;
+    //                     }
+    //                 }
+    //                 $variantCombo = implode('-', $optionValues);
+    //                 $variant = $product->variants()->create([
+    //                     'name' => $product->name,
+    //                     'product_id' => $product->id,
+    //                     'status' => 'active',
+    //                     'combo' => $variantCombo,
+    //                 ]);
+    //                 foreach ($variantData['options'] as $optionId => $valueId) {
+    //                     $variant->options()->attach($optionId, ['value_id' => $valueId]);
+    //                 }
+    //                 staffLog('variants', $variant->id, 'create', $variantCombo.' - product variation created');
+    //             }
+    //         }
+    //         $product->update(['has_variation' => 'yes']);
+
+    //         return response()->json(['status' => 1, 'message' => 'Product variants updated successfully']);
+    //     } catch (Exception $e) {
+    //         return response()->json(['status' => 0, 'message' => $e->getMessage()]);
+    //     }
+    // }
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],

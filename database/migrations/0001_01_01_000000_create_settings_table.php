@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('option');
+            $table->string('option')->index();
             $table->longText('value')->nullable();
-            $table->bigInteger('tenant_id');
+            $table->bigInteger('tenant_id')->index();
             $table->timestamps();
         });
     }

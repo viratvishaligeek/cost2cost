@@ -36,7 +36,7 @@ class OptionController extends Controller
                 })->editColumn('tenant', function ($row) {
                     return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
                 })->editColumn('values', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->values.'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">'.$row->values->count().'</p>';
                 })->editColumn('status', function ($row) {
                     return GetStatusBadge($row->status);
                 })->editColumn('created_at', function ($row) {

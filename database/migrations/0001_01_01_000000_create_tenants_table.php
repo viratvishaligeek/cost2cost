@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('domain', 50)->unique();
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->string('notes');
+            $table->string('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

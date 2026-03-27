@@ -96,8 +96,8 @@ return [
             ],
             [
                 'name' => 'Products',
-                'route' => 'admin.option-value.index',
-                'active' => 'admin.option-value.*',
+                'route' => 'admin.product.index',
+                'active' => 'admin.product.*',
                 'can' => [],
             ],
             [
@@ -145,6 +145,15 @@ return [
                 'can' => [],
             ],
         ],
+    ],
+
+    // file manager menu
+    [
+        'title' => 'File Manager',
+        'icon' => 'fa-solid fa-images',
+        'route' => 'admin.laravel-filemanager',
+        'active' => 'admin.laravel-filemanager',
+        'can' => [],
     ],
 
     // logout menu

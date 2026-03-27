@@ -11,6 +11,8 @@ use App\Http\Controllers\Backend\Product\BrandController;
 use App\Http\Controllers\Backend\Product\CategoryController;
 use App\Http\Controllers\Backend\Product\OptionController;
 use App\Http\Controllers\Backend\Product\OptionValueController;
+use App\Http\Controllers\Backend\Product\ProductController;
+use App\Http\Controllers\Backend\Product\VariantController;
 use App\Http\Controllers\Backend\SettingController;
 use Illuminate\Support\Facades\Route;
 use UniSharp\LaravelFilemanager\Lfm;
@@ -48,10 +50,15 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::resource('category', CategoryController::class);
         Route::resource('options', OptionController::class);
         Route::resource('option-value', OptionValueController::class);
+        Route::resource('product', ProductController::class);
+        Route::resource('variant', VariantController::class);
     });
 
     // ------------- laravel file manager
     Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['auth:admin']], function () {
         Lfm::routes();
     });
+    Route::get('admin/file-manager', function () {
+        return view('backend.filemanager');
+    })->name('laravel-filemanager');
 });

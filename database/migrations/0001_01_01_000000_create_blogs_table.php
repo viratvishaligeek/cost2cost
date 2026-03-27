@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('blogs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->index();
             $table->string('slug')->unique();
             $table->string('featured_image')->nullable();
-            $table->foreignId('author_id');
-            $table->foreignId('publisher_id');
+            $table->foreignId('author_id')->index();
+            $table->foreignId('publisher_id')->index();
             $table->date('publish_date');
             $table->longText('tags')->nullable();
-            $table->string('category_id', 100);
-            $table->bigInteger('tenant_id');
+            $table->string('category_id', 100)->index();
+            $table->bigInteger('tenant_id')->index();
             $table->longText('description')->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamps();

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class Variant extends Model
 {
     use BelongsToTenant, HasFactory, SoftDeletes;
 
@@ -17,6 +17,7 @@ class Product extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'product_id',
         'combo',
         'name',
@@ -61,19 +62,15 @@ class Product extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
     public function options()
     {
-        return $this->hasMany(Option::class);
-    }
-
-    public function variants()
-    {
-        return $this->hasMany(Variant::class);
-    }
-
-    public function brand()
-    {
-        return $this->belongsTo(Brand::class, 'brand_id');
+        return $this->belongsToMany(Option::class, 'variant_options')
+            ->withPivot('value_id');
     }
 
     protected $hidden = [

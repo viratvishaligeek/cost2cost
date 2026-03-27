@@ -67,7 +67,7 @@
                         <a class="dropdown-item export-pdf" href="#!">PDF</a>
                         <a class="dropdown-item export-print" href="#!">Print</a>
                     </div>
-                    <a href="{{ route('admin.options.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
+                    <a href="{{ route('admin.product.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
                         </span> Add</a>
                 </div>
             </div>
@@ -137,7 +137,7 @@
                     searchable: false
                 }
             ];
-            initializeDataTable('#dataTable', "{{ route('admin.options.index') }}", columns, 'Product Option List');
+            initializeDataTable('#dataTable', "{{ route('admin.product.index') }}", columns, 'Products List');
         });
     </script>
 @endsection

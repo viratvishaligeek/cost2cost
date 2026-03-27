@@ -7,17 +7,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     /**
      * Display the admin dashboard.
      *
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function dashboard()
     {
         $pageName = 'Dashboard';
+
         return view('backend.dashboard', compact('pageName'));
     }
 
@@ -25,20 +27,28 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $tenantId = $request->input('tenant_id');
-        if ($tenantId === '0' || $tenantId === 0) {
-            $user->tenant_id = 0;
-        } else {
-            $request->validate([
-                'tenant_id' => 'required|integer|exists:tenants,id'
+        try {
+            if ($tenantId === '0' || $tenantId === 0) {
+                $user->tenant_id = 0;
+            } else {
+                $request->validate([
+                    'tenant_id' => 'required|integer|exists:tenants,id',
+                ]);
+                $user->tenant_id = (int) $tenantId;
+            }
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'tenant_id' => $user->tenant_id,
+                'message' => $user->tenant_id === 0 ? 'Viewing all tenants' : 'Tenant selected successfully',
             ]);
-            $user->tenant_id = (int) $tenantId;
+        } catch (\Exception $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ]);
         }
-        $user->save();
-        return response()->json([
-            'success' => true,
-            'tenant_id' => $user->tenant_id,
-            'message' => $user->tenant_id === 0 ? 'Viewing all tenants' : 'Tenant selected successfully'
-        ]);
     }
 
     public function clearCache()
@@ -49,10 +59,12 @@ class DashboardController extends Controller
             Artisan::call('route:clear');
             Artisan::call('view:clear');
             Artisan::call('optimize:clear');
+
             return back()->with('success', 'Cache cleared successfully!');
         } catch (\Exception $e) {
-            Log::error('Cache clear error: ' . $e->getMessage());
-            return back()->with('error', 'Failed to clear cache. Please try again : ' . $e->getMessage());
+            Log::error('Cache clear error: '.$e->getMessage());
+
+            return back()->with('error', 'Failed to clear cache. Please try again : '.$e->getMessage());
         }
     }
 
@@ -61,6 +73,7 @@ class DashboardController extends Controller
         auth()->guard('admin')->logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+
         return redirect()->route('admin.login')->with('success', 'Logged out successfully!');
     }
 }

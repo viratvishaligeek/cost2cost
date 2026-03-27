@@ -8,7 +8,6 @@ use App\Models\OptionValue;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class OptionValueController extends Controller
@@ -45,9 +44,6 @@ class OptionValueController extends Controller
 
                     return '
                     <div class="d-flex">
-                        <a href="'.route('admin.option-value.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
                         <a href="'.route('admin.option-value.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
@@ -81,7 +77,6 @@ class OptionValueController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            $validated['slug'] = Str::slug($validated['name']);
             OptionValue::create($validated);
             DB::commit();
 
@@ -95,21 +90,16 @@ class OptionValueController extends Controller
 
     public function show($id)
     {
-        $pageName = 'Options Value Detail';
-        $data = OptionValue::findOrFail($this->decryptId($id));
-
-        return view('backend.option-value.show', [
-            'pageName' => $pageName,
-            'data' => $data,
-        ]);
+        return back()->with('error', 'Not Allowes');
     }
 
     public function edit($id)
     {
         $pageName = 'Edit Option Value';
         $data = OptionValue::findOrFail($this->decryptId($id));
+        $options = Option::get();
 
-        return view('backend.option-value.edit', compact('pageName', 'data'));
+        return view('backend.option-value.edit', compact('pageName', 'data', 'options'));
     }
 
     public function update(Request $request, $id)
@@ -117,11 +107,10 @@ class OptionValueController extends Controller
         $data = OptionValue::findOrFail($this->decryptId($id));
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'status' => ['required'],
+            'option_id' => ['required', 'integer', 'exists:options,id'],
         ]);
         try {
             DB::beginTransaction();
-            $validated['slug'] = Str::slug($validated['name']);
             $data->update($validated);
             DB::commit();
 
