@@ -21,13 +21,13 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sk',
   '<p>Navigácia začne pri prvej položke používateľského rozhrania, ktorá bude zvýraznená alebo v prípade prvej položky\n' +
   '  cesty k pätičke podčiarknutá.</p>\n' +
   '\n' +
-  '<h1>Navigácia medzi časťami používateľského rozhrania</h1>\n' +
+  '<h1>Navigácia mec2ci časťami používateľského rozhrania</h1>\n' +
   '\n' +
   '<p>Ak sa chcete posunúť z jednej časti používateľského rozhrania do druhej, stlačte tlačidlo <strong>Tab</strong>.</p>\n' +
   '\n' +
-  '<p>Ak sa chcete posunúť z jednej časti používateľského rozhrania do predchádzajúcej, stlačte tlačidlá <strong>Shift + Tab</strong>.</p>\n' +
+  '<p>Ak sa chcete posunúť z jednej časti používateľského rozhrania do predchác2cajúcej, stlačte tlačidlá <strong>Shift + Tab</strong>.</p>\n' +
   '\n' +
-  '<p>Poradie prepínania medzi týmito časťami používateľského rozhrania pri stláčaní tlačidla <strong>Tab</strong>:</p>\n' +
+  '<p>Poradie prepínania mec2ci týmito časťami používateľského rozhrania pri stláčaní tlačidla <strong>Tab</strong>:</p>\n' +
   '\n' +
   '<ol>\n' +
   '  <li>Panel s ponukou</li>\n' +
@@ -51,17 +51,17 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sk',
   '<p>Klávesy so šípkami <strong>doľava</strong> a <strong>doprava</strong></p>\n' +
   '\n' +
   '<ul>\n' +
-  '  <li>umožňujú presun medzi ponukami na paneli ponúk,</li>\n' +
+  '  <li>umožňujú presun mec2ci ponukami na paneli ponúk,</li>\n' +
   '  <li>otvárajú podponuku v rámci ponuky,</li>\n' +
-  '  <li>umožňujú presun medzi tlačidlami v skupine panelov nástrojov,</li>\n' +
-  '  <li>umožňujú presun medzi položkami cesty prvku v pätičke.</li>\n' +
+  '  <li>umožňujú presun mec2ci tlačidlami v skupine panelov nástrojov,</li>\n' +
+  '  <li>umožňujú presun mec2ci položkami cesty prvku v pätičke.</li>\n' +
   '</ul>\n' +
   '\n' +
   '<p>Klávesy so šípkami <strong>dole</strong> a <strong>hore</strong></p>\n' +
   '\n' +
   '<ul>\n' +
-  '  <li>umožňujú presun medzi položkami ponuky,</li>\n' +
-  '  <li>umožňujú presun medzi položkami v kontextovej ponuke panela nástrojov.</li>\n' +
+  '  <li>umožňujú presun mec2ci položkami ponuky,</li>\n' +
+  '  <li>umožňujú presun mec2ci položkami v kontextovej ponuke panela nástrojov.</li>\n' +
   '</ul>\n' +
   '\n' +
   '<p>Klávesy so <strong>šípkami</strong> vykonávajú prepínanie v rámci vybranej časti používateľského rozhrania.</p>\n' +
@@ -74,20 +74,20 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.sk',
   '<h1>Vykonanie príkazu položky ponuky alebo tlačidla panela nástrojov</h1>\n' +
   '\n' +
   '<p>Keď je zvýraznená požadovaná položka ponuky alebo tlačidlo panela nástrojov, stlačením klávesov <strong>Return</strong>, <strong>Enter</strong>\n' +
-  '  alebo <strong>medzerníka</strong> vykonáte príslušný príkaz položky.</p>\n' +
+  '  alebo <strong>mec2cerníka</strong> vykonáte príslušný príkaz položky.</p>\n' +
   '\n' +
   '<h1>Navigácia v dialógových oknách bez záložiek</h1>\n' +
   '\n' +
   '<p>Pri otvorení dialógových okien bez záložiek prejdete na prvý interaktívny komponent.</p>\n' +
   '\n' +
-  '<p>Medzi interaktívnymi dialógovými komponentmi môžete prechádzať stlačením klávesov <strong>Tab</strong> alebo <strong>Shift+Tab</strong>.</p>\n' +
+  '<p>Mec2ci interaktívnymi dialógovými komponentmi môžete prechác2cať stlačením klávesov <strong>Tab</strong> alebo <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<h1>Navigácia v dialógových oknách so záložkami</h1>\n' +
   '\n' +
   '<p>Pri otvorení dialógových okien so záložkami prejdete na prvé tlačidlo v ponuke záložiek.</p>\n' +
   '\n' +
-  '<p>Medzi interaktívnymi komponentmi tejto dialógovej záložky môžete prechádzať stlačením klávesov <strong>Tab</strong> alebo\n' +
+  '<p>Mec2ci interaktívnymi komponentmi tejto dialógovej záložky môžete prechác2cať stlačením klávesov <strong>Tab</strong> alebo\n' +
   '  <strong>Shift+Tab</strong>.</p>\n' +
   '\n' +
   '<p>Ak chcete prepnúť na ďalšiu záložku dialógového okna, prejdite do ponuky záložiek a potom môžete stlačením príslušného klávesu so <strong>šípkou</strong>\n' +
-  '  prepínať medzi dostupnými záložkami.</p>\n');
+  '  prepínať mec2ci dostupnými záložkami.</p>\n');

@@ -15,29 +15,28 @@ return [
     [
         'title' => 'Advance Module',
         'icon' => 'fa-solid fa-layer-group',
-        'can' => [],
-
+        'can' => ['tenant-browse', 'team-browse', 'role-browse'],
         'children' => [
             [
                 'name' => 'Tenant',
                 'icon' => 'fa-solid fa-building',
                 'route' => 'admin.tenant.index',
                 'active' => 'admin.tenant.*',
-                'can' => [],
+                'can' => ['tenant-browse'],
             ],
             [
                 'name' => 'Team Members',
                 'icon' => 'fa-solid fa-users',
                 'route' => 'admin.team.index',
                 'active' => 'admin.team.*',
-                'can' => [],
+                'can' => ['team-browse'],
             ],
             [
                 'name' => 'Roles & Permissions',
                 'icon' => 'fa-solid fa-shield-halved',
                 'route' => 'admin.role.index',
                 'active' => 'admin.role.*',
-                'can' => [],
+                'can' => ['role-browse'],
             ],
         ],
     ],
@@ -46,19 +45,19 @@ return [
     [
         'title' => 'Blogging',
         'icon' => 'fa-solid fa-blog',
-        'can' => [],
+        'can' => ['blog_category-browse', 'blog-browse'],
         'children' => [
             [
                 'name' => 'Catgeory',
                 'route' => 'admin.blog-category.index',
                 'active' => 'admin.blog-category.*',
-                'can' => [],
+                'can' => ['blog_category-browse'],
             ],
             [
                 'name' => 'Post',
                 'route' => 'admin.blog.index',
                 'active' => 'admin.blog.*',
-                'can' => [],
+                'can' => ['blog-browse'],
             ],
         ],
     ],
@@ -67,38 +66,37 @@ return [
     [
         'title' => 'Products',
         'icon' => 'fa-solid fa-box-open',
-        'can' => [],
-
+        'can' => ['brand-browse', 'category-browse', 'options-browse', 'option_value-browse', 'product-browse'],
         'children' => [
             [
                 'name' => 'Brands',
                 'route' => 'admin.brand.index',
                 'active' => 'admin.brand.*',
-                'can' => [],
+                'can' => ['brand-browse'],
             ],
             [
                 'name' => 'Category',
                 'route' => 'admin.category.index',
                 'active' => 'admin.category.*',
-                'can' => [],
+                'can' => ['category-browse'],
             ],
             [
                 'name' => 'Product Option',
                 'route' => 'admin.options.index',
                 'active' => 'admin.options.*',
-                'can' => [],
+                'can' => ['options-browse'],
             ],
             [
                 'name' => 'Option Value',
                 'route' => 'admin.option-value.index',
                 'active' => 'admin.option-value.*',
-                'can' => [],
+                'can' => ['option_value-browse'],
             ],
             [
                 'name' => 'Products',
                 'route' => 'admin.product.index',
                 'active' => 'admin.product.*',
-                'can' => [],
+                'can' => ['product-browse'],
             ],
             [
                 'name' => 'Low Stock Products',
@@ -113,7 +111,7 @@ return [
     [
         'title' => 'Setting',
         'icon' => 'fa-solid fa-gear',
-        'can' => [],
+        'can' => ['global-setting', 'general-setting', 'seo-setting', 'email-setting'],
 
         'children' => [
             [
@@ -121,28 +119,28 @@ return [
                 'route' => 'admin.setting.edit',
                 'active' => 'admin.setting.edit',
                 'params' => 'global',
-                'can' => [],
+                'can' => ['global-setting'],
             ],
             [
                 'name' => 'General',
                 'route' => 'admin.setting.edit',
                 'active' => 'admin.setting.edit',
                 'params' => 'general',
-                'can' => [],
+                'can' => ['general-setting'],
             ],
             [
                 'name' => 'SEO Config',
                 'route' => 'admin.setting.edit',
                 'active' => 'admin.setting.edit',
                 'params' => 'seo-config',
-                'can' => [],
+                'can' => ['seo-setting'],
             ],
             [
                 'name' => 'Email',
                 'route' => 'admin.setting.edit',
                 'active' => 'admin.setting.edit',
                 'params' => 'email',
-                'can' => [],
+                'can' => ['email-setting'],
             ],
         ],
     ],

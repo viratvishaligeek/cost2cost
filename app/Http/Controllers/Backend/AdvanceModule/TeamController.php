@@ -14,6 +14,15 @@ use Yajra\DataTables\DataTables;
 
 class TeamController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:team-browse')->only('index');
+        $this->middleware('can:team-read')->only('show');
+        $this->middleware('can:team-edit')->only('edit', 'update');
+        $this->middleware('can:team-add')->only('store', 'create');
+        $this->middleware('can:team-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -52,24 +61,28 @@ class TeamController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return $row->created_at ? $row->created_at->format('d, M Y, H:i A') : 'N/A';
                 })
+
                 ->addColumn('action', function ($row) {
                     $id = encrypt($row->id);
-                    return '
-                <div class="d-flex">
-                    <a href="' . route('admin.team.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
-                        <span class="fas fa-eye"></span>
-                    </a>
-                    <a href="' . route('admin.team.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
-                        <span class="fas fa-edit"></span>
-                    </a>
-                    <form method="POST" action="' . route('admin.team.destroy', $id) . '" class="m-0 p-0 delete-form">
-                        ' . csrf_field() . '
-                        ' . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
-                            <i class="fa fa-trash text-danger"></i>
-                        </button>
-                    </form>
-                </div>';
+                    $btn = '<div class="d-flex">';
+                    if (Auth::user()->can('team-read') || Auth::user()->can('team-edit')) {
+                        $btn .= '<a href="' . route('admin.team.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                    }
+                    if (Auth::user()->can('team-edit')) {
+                        $btn .= '<a href="' . route('admin.team.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    }
+                    if (Auth::user()->can('team-delete')) {
+                        $btn .= '<form method="POST" action="' . route('admin.team.destroy', $id) . '" class="m-0 p-0 delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
+                                <i class="fa fa-trash text-danger"></i>
+                            </button>
+                        </form>';
+                    }
+                    $btn .= '</div>';
+
+                    return $btn;
                 })
                 ->rawColumns(['name', 'phone', 'role', 'status', 'action'])
                 ->make(true);

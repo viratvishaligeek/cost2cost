@@ -14,6 +14,16 @@ use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('can:role-browse')->only('index');
+        $this->middleware('can:role-read')->only('show');
+        $this->middleware('can:role-edit')->only('edit', 'update');
+        $this->middleware('can:role-add')->only('store', 'create');
+        $this->middleware('can:role-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -38,22 +48,25 @@ class RoleController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $id = encrypt($row->id);
-                    return '
-                <div class="d-flex">
-                    <a href="' . route('admin.role.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
-                        <span class="fas fa-eye"></span>
-                    </a>
-                    <a href="' . route('admin.role.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
-                        <span class="fas fa-edit"></span>
-                    </a>
-                    <form method="POST" action="' . route('admin.role.destroy', $id) . '" class="m-0 p-0 delete-form">
-                        ' . csrf_field() . '
-                        ' . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
-                            <i class="fa fa-trash text-danger"></i>
-                        </button>
-                    </form>
-                </div>';
+                    $btn = '<div class="d-flex">';
+                    if (Auth::user()->can('role-read') || Auth::user()->can('role-edit')) {
+                        $btn .= '<a href="' . route('admin.role.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                    }
+                    if (Auth::user()->can('role-edit')) {
+                        $btn .= '<a href="' . route('admin.role.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    }
+                    if (Auth::user()->can('role-delete')) {
+                        $btn .= '<form method="POST" action="' . route('admin.role.destroy', $id) . '" class="m-0 p-0 delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
+                                <i class="fa fa-trash text-danger"></i>
+                            </button>
+                        </form>';
+                    }
+                    $btn .= '</div>';
+
+                    return $btn;
                 })
                 ->rawColumns(['name', 'role_for', 'created_at', 'action'])
                 ->make(true);

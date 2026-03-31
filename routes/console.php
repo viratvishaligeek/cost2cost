@@ -5,37 +5,85 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
-
+use Spatie\Permission\PermissionRegistrar;
 
 Artisan::command('permissions:setup', function () {
     $allPermissions = [
-        // tenant permissions
+        // custom tenant change permissions
+        'choose_tenant',
+        // Tenant | Team Member | Roles permissions
         'tenant-browse',
         'tenant-read',
         'tenant-edit',
         'tenant-add',
         'tenant-delete',
-
-        // team permissions
+        // ----------------
         'team-browse',
         'team-read',
         'team-edit',
         'team-add',
         'team-delete',
-
-        // role permissions
+        // --------------------
         'role-browse',
         'role-read',
         'role-edit',
         'role-add',
         'role-delete',
 
-        // custom permissions
+        // blog-category | blog permissions
+        'blog_category-browse',
+        'blog_category-read',
+        'blog_category-edit',
+        'blog_category-add',
+        'blog_category-delete',
+        // ---------
+        'blog-browse',
+        'blog-read',
+        'blog-edit',
+        'blog-add',
+        'blog-delete',
+
+        // brand | category | options | option_value | product Permissions
+        'brand-browse',
+        'brand-read',
+        'brand-edit',
+        'brand-add',
+        'brand-delete',
+        // -----------------
+        'category-browse',
+        'category-read',
+        'category-edit',
+        'category-add',
+        'category-delete',
+        // -----------------
+        'options-browse',
+        'options-read',
+        'options-edit',
+        'options-add',
+        'options-delete',
+        // -----------------
+        'option_value-browse',
+        'option_value-read',
+        'option_value-edit',
+        'option_value-add',
+        'option_value-delete',
+        // -----------------
+        'product-browse',
+        'product-read',
+        'product-edit',
+        'product-add',
+        'product-delete',
+        // -----------------
+
+        // global | general | seo | email Permissions
+        'global-setting',
+        'general-setting',
+        'seo-setting',
+        'email-setting',
 
     ];
     // Clear cache to avoid permission cache issues
-    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    app()[PermissionRegistrar::class]->forgetCachedPermissions();
     // Delete all related records in model_has_permissions and model_has_roles
     DB::table('model_has_permissions')->delete();
     DB::table('model_has_roles')->delete();

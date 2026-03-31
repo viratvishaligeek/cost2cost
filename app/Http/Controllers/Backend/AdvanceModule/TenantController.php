@@ -4,12 +4,22 @@ namespace App\Http\Controllers\Backend\AdvanceModule;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class TenantController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:tenant-browse')->only('index');
+        $this->middleware('can:tenant-read')->only('show');
+        $this->middleware('can:tenant-edit')->only('edit', 'update');
+        $this->middleware('can:tenant-add')->only('store', 'create');
+        $this->middleware('can:tenant-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -24,9 +34,10 @@ class TenantController extends Controller
         $pageName = 'Tenant List';
         if ($request->ajax()) {
             $query = Tenant::query();
-            if (!$request->has('order')) {
+            if (! $request->has('order')) {
                 $query->latest();
             }
+
             return DataTables::eloquent($query)
                 ->addIndexColumn()
                 ->editColumn('name', function ($row) {
@@ -45,44 +56,55 @@ class TenantController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $id = encrypt($row->id);
-                    return '
-                    <div class="d-flex">
-                        <a href="' . route('admin.tenant.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
-                        <a href="' . route('admin.tenant.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
-                            <span class="fas fa-edit"></span>
-                        </a>
-                        <form method="POST" action="' . route('admin.tenant.destroy', $id) . '" class="m-0 p-0 delete-form">
+                    $btn = '<div class="d-flex">';
+                    if (Auth::user()->can('tenant-read') || Auth::user()->can('tenant-edit')) {
+                        $btn .= '<a href="' . route('admin.tenant.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                    }
+                    if (Auth::user()->can('tenant-edit')) {
+                        $btn .= '<a href="' . route('admin.tenant.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    }
+                    if (Auth::user()->can('tenant-delete')) {
+                        $btn .= '<form method="POST" action="' . route('admin.tenant.destroy', $id) . '" class="m-0 p-0 delete-form">
                             ' . csrf_field() . '
                             ' . method_field('DELETE') . '
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
-                        </form>
-                    </div>';
+                        </form>';
+                    }
+                    $btn .= '</div>';
+
+                    return $btn;
                 })
                 ->rawColumns(['name', 'domain', 'status', 'action'])
                 ->make(true);
         }
+
         return view('backend.tenant.index', compact('pageName'));
     }
 
     public function create()
     {
         $pageName = 'Create Tenant';
+        if (! Auth::user()->can('tenant-add')) {
+            return redirect()
+                ->route('admin.tenant.index')
+                ->with('error', 'Action not allowed.');
+        }
+
         return view('backend.tenant.create', compact('pageName'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'   => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100'],
             'domain' => ['required', 'url', 'max:50', 'unique:tenants,domain'],
             'status' => ['required'],
-            'notes'  => ['nullable', 'string', 'max:255']
+            'notes' => ['nullable', 'string', 'max:255'],
         ]);
         Tenant::create($validated);
+
         return redirect()
             ->route('admin.tenant.index')
             ->with('success', 'Tenant created successfully');
@@ -92,9 +114,10 @@ class TenantController extends Controller
     {
         $pageName = 'Tenant Details';
         $tenant = Tenant::findOrFail($this->decryptId($id));
+
         return view('backend.tenant.show', [
             'pageName' => $pageName,
-            'data' => $tenant
+            'data' => $tenant,
         ]);
     }
 
@@ -102,9 +125,10 @@ class TenantController extends Controller
     {
         $pageName = 'Edit Tenant';
         $tenant = Tenant::findOrFail($this->decryptId($id));
+
         return view('backend.tenant.edit', [
             'pageName' => $pageName,
-            'data' => $tenant
+            'data' => $tenant,
         ]);
     }
 
@@ -112,12 +136,13 @@ class TenantController extends Controller
     {
         $tenant = Tenant::findOrFail($this->decryptId($id));
         $validated = $request->validate([
-            'name'   => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100'],
             'domain' => ['required', 'url', 'max:50', 'unique:tenants,domain,' . $tenant->id],
             'status' => ['required'],
-            'notes'  => ['nullable', 'string', 'max:255']
+            'notes' => ['nullable', 'string', 'max:255'],
         ]);
         $tenant->update($validated);
+
         return redirect()
             ->route('admin.tenant.index')
             ->with('success', 'Tenant updated successfully');
@@ -127,6 +152,7 @@ class TenantController extends Controller
     {
         $tenant = Tenant::findOrFail($this->decryptId($id));
         $tenant->delete();
+
         return redirect()
             ->route('admin.tenant.index')
             ->with('success', 'Tenant deleted successfully');

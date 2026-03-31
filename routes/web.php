@@ -8,4 +8,5 @@ include 'admin.php';
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'home')->name('home');
+    Route::get('/contact', 'contact')->name('contact');
 });

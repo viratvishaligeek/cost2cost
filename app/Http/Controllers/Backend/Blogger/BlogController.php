@@ -8,12 +8,22 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class BlogController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:blog-browse')->only('index');
+        $this->middleware('can:blog-read')->only('show');
+        $this->middleware('can:blog-edit')->only('edit', 'update');
+        $this->middleware('can:blog-add')->only('store', 'create');
+        $this->middleware('can:blog-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -33,38 +43,40 @@ class BlogController extends Controller
             }
 
             return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
             })->editColumn('category', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">'.$row->category->name.'</p>';
+                return '<p class="text-sm mb-0 text-capitalize">' . $row->category->name . '</p>';
             })->editColumn('tenant', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
+                return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
             })->editColumn('author', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">'.$row->author->name.'</p>';
+                return '<p class="text-sm mb-0 text-capitalize">' . $row->author->name . '</p>';
             })->editColumn('publisher', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">'.$row->publisher->name.'</p>';
+                return '<p class="text-sm mb-0 text-capitalize">' . $row->publisher->name . '</p>';
             })->editColumn('status', function ($row) {
                 return GetStatusBadge($row->status);
             })->editColumn('created_at', function ($row) {
                 return $row->created_at->format('d, M Y, H:i A');
             })->addColumn('action', function ($row) {
                 $id = encrypt($row->id);
+                $btn = '<div class="d-flex">';
+                if (Auth::user()->can('blog-read') || Auth::user()->can('blog-edit')) {
+                    $btn .= '<a href="' . route('admin.blog.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                }
+                if (Auth::user()->can('blog-edit')) {
+                    $btn .= '<a href="' . route('admin.blog.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                }
+                if (Auth::user()->can('blog-delete')) {
+                    $btn .= '<form method="POST" action="' . route('admin.blog.destroy', $id) . '" class="m-0 p-0 delete-form">
+                ' . csrf_field() . '
+                ' . method_field('DELETE') . '
+                <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
+                    <i class="fa fa-trash text-danger"></i>
+                </button>
+            </form>';
+                }
+                $btn .= '</div>';
 
-                return '
-                    <div class="d-flex">
-                        <a href="'.route('admin.blog.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
-                        <a href="'.route('admin.blog.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
-                            <span class="fas fa-edit"></span>
-                        </a>
-                        <form method="POST" action="'.route('admin.blog.destroy', $id).'" class="m-0 p-0 delete-form">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
-                            <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
-                                <i class="fa fa-trash text-danger"></i>
-                            </button>
-                        </form>
-                    </div>';
+                return $btn;
             })->rawColumns(['name', 'author', 'publisher', 'category', 'tenant', 'status', 'action'])->make(true);
         }
 
@@ -104,7 +116,7 @@ class BlogController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
@@ -154,7 +166,7 @@ class BlogController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 

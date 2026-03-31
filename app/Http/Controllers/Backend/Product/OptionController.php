@@ -6,12 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Option;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class OptionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:options-browse')->only('index');
+        $this->middleware('can:options-read')->only('show');
+        $this->middleware('can:options-edit')->only('edit', 'update');
+        $this->middleware('can:options-add')->only('store', 'create');
+        $this->middleware('can:options-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -32,34 +42,36 @@ class OptionController extends Controller
 
             return DataTables::eloquent($query)
                 ->addIndexColumn()->editColumn('name', function ($row) {
-                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
                 })->editColumn('tenant', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
                 })->editColumn('values', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->values->count().'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">' . $row->values->count() . '</p>';
                 })->editColumn('status', function ($row) {
                     return GetStatusBadge($row->status);
                 })->editColumn('created_at', function ($row) {
                     return $row->created_at->format('d, M Y, H:i A');
                 })->addColumn('action', function ($row) {
                     $id = encrypt($row->id);
-
-                    return '
-                    <div class="d-flex">
-                        <a href="'.route('admin.options.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
-                        <a href="'.route('admin.options.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
-                            <span class="fas fa-edit"></span>
-                        </a>
-                        <form method="POST" action="'.route('admin.options.destroy', $id).'" class="m-0 p-0 delete-form">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
+                    $btn = '<div class="d-flex">';
+                    if (Auth::user()->can('options-read') || Auth::user()->can('options-edit')) {
+                        $btn .= '<a href="' . route('admin.options.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                    }
+                    if (Auth::user()->can('options-edit')) {
+                        $btn .= '<a href="' . route('admin.options.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    }
+                    if (Auth::user()->can('options-delete')) {
+                        $btn .= '<form method="POST" action="' . route('admin.options.destroy', $id) . '" class="m-0 p-0 delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
-                        </form>
-                    </div>';
+                        </form>';
+                    }
+                    $btn .= '</div>';
+
+                    return $btn;
                 })->rawColumns(['name', 'values', 'tenant', 'status', 'action'])->make(true);
         }
 
@@ -89,7 +101,7 @@ class OptionController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
@@ -129,7 +141,7 @@ class OptionController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 

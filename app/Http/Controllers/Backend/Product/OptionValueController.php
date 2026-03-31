@@ -7,11 +7,20 @@ use App\Models\Option;
 use App\Models\OptionValue;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class OptionValueController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:option_value-browse')->only('index');
+        $this->middleware('can:option_value-read')->only('show');
+        $this->middleware('can:option_value-edit')->only('edit', 'update');
+        $this->middleware('can:option_value-add')->only('store', 'create');
+        $this->middleware('can:option_value-delete')->only('destroy');
+    }
     private function decryptId($id)
     {
         try {
@@ -29,32 +38,33 @@ class OptionValueController extends Controller
             if (! $request->has('order')) {
                 $query->latest();
             }
-
             return DataTables::eloquent($query)
                 ->addIndexColumn()->editColumn('name', function ($row) {
-                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
                 })->editColumn('option', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->option->name.'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">' . $row->option->name . '</p>';
                 })->editColumn('status', function ($row) {
                     return GetStatusBadge($row->status);
                 })->editColumn('created_at', function ($row) {
                     return $row->created_at->format('d, M Y, H:i A');
                 })->addColumn('action', function ($row) {
                     $id = encrypt($row->id);
-
-                    return '
-                    <div class="d-flex">
-                        <a href="'.route('admin.option-value.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
-                            <span class="fas fa-edit"></span>
-                        </a>
-                        <form method="POST" action="'.route('admin.option-value.destroy', $id).'" class="m-0 p-0 delete-form">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
+                    $btn = '<div class="d-flex">';
+                    if (Auth::user()->can('option_value-edit')) {
+                        $btn .= '<a href="' . route('admin.option-value.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                    }
+                    if (Auth::user()->can('option_value-delete')) {
+                        $btn .= '<form method="POST" action="' . route('admin.option-value.destroy', $id) . '" class="m-0 p-0 delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
-                        </form>
-                    </div>';
+                        </form>';
+                    }
+                    $btn .= '</div>';
+
+                    return $btn;
                 })->rawColumns(['name', 'option', 'status', 'action'])->make(true);
         }
 
@@ -84,7 +94,7 @@ class OptionValueController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
@@ -118,7 +128,7 @@ class OptionValueController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 

@@ -1,3 +1,4 @@
+.
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr" data-navigation-type="default" data-navbar-horizontal-shape="default">
 
@@ -23,6 +24,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap"
         rel="stylesheet">
     <link href="{{ URL::asset('backend') }}/simplebar/simplebar.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ URL::asset('backend') }}/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
     <link href="{{ URL::asset('backend') }}/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
     @yield('css')

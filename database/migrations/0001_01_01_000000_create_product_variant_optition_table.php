@@ -47,12 +47,19 @@ return new class extends Migration
             $table->longText('custom_table')->nullable();
             $table->bigInteger('tenant_id')->index();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('variants', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique()->index();
             $table->string('slug')->unique();
+            $table->foreignId('product_id')->index();
+            $table->foreignId('category_id')->index();
+            $table->foreignId('sub_category_id')->nullable()->index();
+            $table->foreignId('brand_id')->index();
+            $table->foreignId('option_id')->nullable()->index();
+            $table->foreignId('value_id')->nullable()->index();
             $table->string('combo')->unique();
             $table->enum('refundable', ['yes', 'no'])->default('no');
             $table->string('refund_limit', 50)->nullable();
@@ -81,6 +88,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'draft'])->default('draft')->index();
             $table->bigInteger('tenant_id')->index();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('variant_options', function (Blueprint $table) {
@@ -90,6 +98,7 @@ return new class extends Migration
             $table->bigInteger('option_id');
             $table->bigInteger('value_id');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('product_images', function (Blueprint $table) {
@@ -102,6 +111,7 @@ return new class extends Migration
             $table->longText('infographics')->nullable();
             $table->longText('video')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

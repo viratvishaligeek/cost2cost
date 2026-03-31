@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         api: __DIR__ . '/../routes/api.php',
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-          $middleware->redirectGuestsTo(function (Request $request) {
+        $middleware->redirectGuestsTo(function (Request $request) {
             if ($request->is('admin*')) {
                 return route('admin.login');
             }
@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'tenant' => \App\Http\Middleware\TenantMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

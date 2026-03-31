@@ -6,12 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class BrandController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:brand-browse')->only('index');
+        $this->middleware('can:brand-read')->only('show');
+        $this->middleware('can:brand-edit')->only('edit', 'update');
+        $this->middleware('can:brand-add')->only('store', 'create');
+        $this->middleware('can:brand-delete')->only('destroy');
+    }
+
     private function decryptId($id)
     {
         try {
@@ -29,36 +39,37 @@ class BrandController extends Controller
             if (! $request->has('order')) {
                 $query->latest();
             }
-
             return DataTables::eloquent($query)->addIndexColumn()->editColumn('name', function ($row) {
-                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
             })->editColumn('product_count', function ($row) {
                 return '<p class="text-sm mb-0 text-capitalize">00</p>';
             })->editColumn('tenant', function ($row) {
-                return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
+                return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
             })->editColumn('status', function ($row) {
                 return GetStatusBadge($row->status);
             })->editColumn('created_at', function ($row) {
                 return $row->created_at->format('d, M Y, H:i A');
             })->addColumn('action', function ($row) {
                 $id = encrypt($row->id);
+                $btn = '<div class="d-flex">';
+                if (Auth::user()->can('brand-read') || Auth::user()->can('brand-edit')) {
+                    $btn .= '<a href="' . route('admin.brand.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm"><span class="fas fa-eye"></span></a>';
+                }
+                if (Auth::user()->can('brand-edit')) {
+                    $btn .= '<a href="' . route('admin.brand.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm"><span class="fas fa-edit"></span></a>';
+                }
+                if (Auth::user()->can('brand-delete')) {
+                    $btn .= '<form method="POST" action="' . route('admin.brand.destroy', $id) . '" class="m-0 p-0 delete-form">
+                ' . csrf_field() . '
+                ' . method_field('DELETE') . '
+                <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
+                    <i class="fa fa-trash text-danger"></i>
+                </button>
+            </form>';
+                }
+                $btn .= '</div>';
 
-                return '
-                    <div class="d-flex">
-                        <a href="'.route('admin.brand.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
-                        <a href="'.route('admin.brand.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
-                            <span class="fas fa-edit"></span>
-                        </a>
-                        <form method="POST" action="'.route('admin.brand.destroy', $id).'" class="m-0 p-0 delete-form">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
-                            <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
-                                <i class="fa fa-trash text-danger"></i>
-                            </button>
-                        </form>
-                    </div>';
+                return $btn;
             })->rawColumns(['name', 'product_count', 'tenant', 'status', 'action'])->make(true);
         }
 
@@ -90,7 +101,7 @@ class BrandController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
@@ -132,7 +143,7 @@ class BrandController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 

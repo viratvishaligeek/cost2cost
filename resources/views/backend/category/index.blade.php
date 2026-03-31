@@ -67,28 +67,32 @@
                         <a class="dropdown-item export-pdf" href="#!">PDF</a>
                         <a class="dropdown-item export-print" href="#!">Print</a>
                     </div>
-                    <a href="{{ route('admin.category.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
-                        </span> Add</a>
+                    @can('category-add')
+                        <a href="{{ route('admin.category.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
+                            </span> Add</a>
+                    @endcan
                 </div>
             </div>
         </div>
         <div
             class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
             <div class="table-responsive scrollbar mx-n1 px-1">
-                <table id="dataTable" class="table fs-9 mb-0">
-                    <thead>
-                        <tr>
-                            <th class="white-space-nowrap align-middle fs-9 ">Sr. No</th>
-                            <th class="white-space-nowrap align-middle">Name</th>
-                            <th class="white-space-nowrap align-middle ">Parent</th>
-                            <th class="white-space-nowrap align-middle ">Tenant</th>
-                            <th class="white-space-nowrap align-middle ">Status</th>
-                            <th class="white-space-nowrap align-middle ">Action </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                @can('category-browse')
+                    <table id="dataTable" class="table fs-9 mb-0">
+                        <thead>
+                            <tr>
+                                <th class="white-space-nowrap align-middle fs-9 ">Sr. No</th>
+                                <th class="white-space-nowrap align-middle">Name</th>
+                                <th class="white-space-nowrap align-middle ">Parent</th>
+                                <th class="white-space-nowrap align-middle ">Tenant</th>
+                                <th class="white-space-nowrap align-middle ">Status</th>
+                                <th class="white-space-nowrap align-middle ">Action </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                @endcan
             </div>
         </div>
 
