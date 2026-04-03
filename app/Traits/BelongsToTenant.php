@@ -11,6 +11,9 @@ trait BelongsToTenant
     protected static function bootBelongsToTenant()
     {
         static::addGlobalScope('tenant_filter', function (Builder $builder) {
+            if (request()->is('api/*')) {
+                return;
+            }
             if (Auth::check()) {
                 $tenantId = Auth::user()->tenant_id;
 

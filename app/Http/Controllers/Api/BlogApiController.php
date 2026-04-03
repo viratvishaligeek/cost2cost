@@ -11,7 +11,7 @@ class BlogApiController extends Controller
     public function index(Request $request)
     {
         $perPage = ($request->per_page ?? 20);
-        $blogs = Blog::where('status', 'publish')
+        $blogs = Blog::withoutGlobalScope('tenant_filter')->where('status', 'published')
             ->where('tenant_id', $request->tenant_id)
             ->with([
                 'category:id,name',
