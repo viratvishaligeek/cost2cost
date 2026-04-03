@@ -16,8 +16,8 @@ class TenantMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $host = $request->getHost();
-        $tenant = Tenant::where('domain', 'LIKE', '%' . $host . '%')->first();
+        $tenantDomain = $request->header('X-Tenant');
+        $tenant = Tenant::where('domain', 'LIKE', '%' . $tenantDomain . '%')->first();
         if (!$tenant) {
             return response()->json([
                 'status' => 404,

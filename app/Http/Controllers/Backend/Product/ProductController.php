@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Backend\Product;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Option;
 use App\Models\Product;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -33,11 +35,11 @@ class ProductController extends Controller
 
             return DataTables::eloquent($query)
                 ->addIndexColumn()->editColumn('name', function ($row) {
-                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">'.$row->name.'</p>';
+                    return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
                 })->editColumn('tenant', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->tenant->name.'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
                 })->editColumn('values', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">'.$row->values->count().'</p>';
+                    return '<p class="text-sm mb-0 text-capitalize">' . $row->values->count() . '</p>';
                 })->editColumn('status', function ($row) {
                     return GetStatusBadge($row->status);
                 })->editColumn('created_at', function ($row) {
@@ -47,15 +49,15 @@ class ProductController extends Controller
 
                     return '
                     <div class="d-flex">
-                        <a href="'.route('admin.product.show', $id).'" class="btn btn-subtle-warning m-1 btn-sm">
+                        <a href="' . route('admin.product.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
                             <span class="fas fa-eye"></span>
                         </a>
-                        <a href="'.route('admin.product.edit', $id).'" class="btn btn-subtle-primary m-1 btn-sm">
+                        <a href="' . route('admin.product.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
-                        <form method="POST" action="'.route('admin.product.destroy', $id).'" class="m-0 p-0 delete-form">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
+                        <form method="POST" action="' . route('admin.product.destroy', $id) . '" class="m-0 p-0 delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
                             <button type="submit" class="btn btn-subtle-danger m-1 btn-sm confirm-button">
                                 <i class="fa fa-trash text-danger"></i>
                             </button>
@@ -64,14 +66,12 @@ class ProductController extends Controller
                 })->rawColumns(['name', 'values', 'tenant', 'status', 'action'])->make(true);
         }
 
-        return view('backend.product.index', compact('pageName'));
-    }
+        $categories = Category::get();
+        $subCategories = Category::get();
+        $brands = Brand::get();
+        $options = Option::with('values')->get();
 
-    public function create()
-    {
-        $pageName = 'Create Product';
-
-        return view('backend.product.create', compact('pageName'));
+        return view('backend.product.index', compact('pageName', 'categories', 'brands', 'options', 'subCategories'));
     }
 
     public function store(Request $request)
@@ -90,7 +90,7 @@ class ProductController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ class ProductController extends Controller
         } catch (\Exception $th) {
             DB::rollBack();
 
-            return back()->withInput()->with('error', 'Something went wrong while saving data. '.$th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 

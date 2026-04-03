@@ -69,6 +69,9 @@
                     </div>
                     <a href="{{ route('admin.product.create') }}" class="btn btn-primary"> <span class="fas fa-plus me-2">
                         </span> Add</a>
+                    <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">Add Product</button>
+                    @include('backend.product.partial.add-from')
                 </div>
             </div>
         </div>
