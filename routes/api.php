@@ -11,7 +11,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.', 'middleware' => ['tenant']], func
     });
     Route::controller(BlogApiController::class)->group(function () {
         Route::get('blogs', 'index');
-        Route::get('category/blogs', 'index');
+        Route::get('category/{id}', 'categoryBlog');
     });
     Route::controller(ContactFormApiController::class)->group(function () {
         Route::post('form-submit', 'formSubmit');

@@ -11,32 +11,32 @@ class BlogCatApiController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = ($request->per_page ?? 20);
         $tenantId = $request->tenant_id;
-        $page = ($request->page ?? 1);
-        $cacheKey = "blog_categories_{$tenantId}_page_{$page}_perpage_{$perPage}";
+        if (!$tenantId) {
+            return response()->json(['status' => 400, 'message' => 'Tenant Details is required'], 400);
+        }
+        $perPage = (int) $request->per_page ?? 20;
+        $page = (int) $request->page ?? 1;
 
-        $blogs = Cache::remember($cacheKey, 60, function () use ($tenantId, $perPage) {
-            return BlogCategory::where('tenant_id', $tenantId)
-                ->where('status', 'publish')
+        $cacheKey = "blog_categories_t{$tenantId}_p{$page}_pp{$perPage}";
+        $blogsCat = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $perPage) {
+            return BlogCategory::withoutGlobalScope('tenant_filter')
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
                 ->orderBy('updated_at', 'desc')
                 ->paginate($perPage);
         });
-        $blogs = BlogCategory::where('tenant_id', $request->tenant_id)
-            ->where('status', 'publish')
-            ->orderBy('updated_at', 'desc')
-            ->paginate($perPage);
         return response()->json([
             'status' => 200,
             'message' => 'success',
-            'data' => $blogs->items(),
+            'data' => $blogsCat->items(),
             'pagination' => [
-                'total' => $blogs->total(),
-                'per_page' => $blogs->perPage(),
-                'current_page' => $blogs->currentPage(),
-                'last_page' => $blogs->lastPage(),
-                'next_page_url' => $blogs->nextPageUrl(),
-                'prev_page_url' => $blogs->previousPageUrl(),
+                'total'        => $blogsCat->total(),
+                'per_page'     => $blogsCat->perPage(),
+                'current_page' => $blogsCat->currentPage(),
+                'last_page'    => $blogsCat->lastPage(),
+                'next_page_url' => $blogsCat->nextPageUrl(),
+                'prev_page_url' => $blogsCat->previousPageUrl(),
             ],
         ], 200);
     }
