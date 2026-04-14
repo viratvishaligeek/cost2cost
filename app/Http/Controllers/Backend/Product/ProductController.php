@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Option;
+use App\Models\OptionValue;
 use App\Models\Product;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
@@ -38,8 +39,6 @@ class ProductController extends Controller
                     return '<p class="text-sm font-weight-bold mb-0 text-capitalize">' . $row->name . '</p>';
                 })->editColumn('tenant', function ($row) {
                     return '<p class="text-sm mb-0 text-capitalize">' . $row->tenant->name . '</p>';
-                })->editColumn('values', function ($row) {
-                    return '<p class="text-sm mb-0 text-capitalize">' . $row->values->count() . '</p>';
                 })->editColumn('status', function ($row) {
                     return GetStatusBadge($row->status);
                 })->editColumn('created_at', function ($row) {
@@ -63,84 +62,118 @@ class ProductController extends Controller
                             </button>
                         </form>
                     </div>';
-                })->rawColumns(['name', 'values', 'tenant', 'status', 'action'])->make(true);
+                })->rawColumns(['name', 'tenant', 'status', 'action'])->make(true);
         }
 
-        $categories = Category::get();
-        $subCategories = Category::get();
+        $categories = Category::where('is_parent', 'yes')->get();
         $brands = Brand::get();
         $options = Option::with('values')->get();
 
-        return view('backend.product.index', compact('pageName', 'categories', 'brands', 'options', 'subCategories'));
+        return view('backend.product.index', compact('pageName', 'categories', 'brands', 'options'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'status' => ['required'],
+        $request->validate([
+            'name'            => ['required', 'string', 'max:255', 'unique:products,name'],
+            'category_id'     => ['required', 'integer'],
+            'brand_id'        => ['required', 'integer'],
+            'status'          => ['required', 'in:active,inactive,draft'],
+            'has_variation'   => ['required', 'in:yes,no'],
         ]);
         try {
             DB::beginTransaction();
-            $validated['slug'] = Str::slug($validated['name']);
-            Option::create($validated);
-            DB::commit();
+            $product = new Product();
+            $product->name            = $request->name;
+            $product->slug            = Str::slug($request->name);
+            $product->brand_id        = $request->brand_id;
+            $product->category_id     = $request->category_id;
+            $product->sub_category_id = $request->sub_category_id;
+            $product->has_variation   = $request->has_variation;
+            $product->status          = $request->status;
+            $product->save();
 
-            return redirect()->route('admin.product.index')->with('success', 'Product created successfully');
+            if ($request->has_variation == 'yes' && $request->has('variants')) {
+                foreach ($request->variants as $variantData) {
+                    $optionNames = [];
+                    if (!isset($variantData['options'])) continue;
+                    foreach ($variantData['options'] as $optionId => $valueId) {
+                        $val = OptionValue::find($valueId);
+                        if ($val) {
+                            $optionNames[] = $val->name;
+                        }
+                    }
+                    $variantCombo = implode('-', $optionNames);
+                    $uniqueName = $product->name . '-' . $variantCombo;
+                    $variant = $product->variants()->create([
+                        'name' => $uniqueName,
+                        'combo' => $variantCombo,
+                        'status' => 'active',
+                        'tenant_id' => $product->tenant_id,
+                        'stock_status' => 'in_stock',
+                        'sku' => strtoupper(Str::random(10)),
+                    ]);
+
+                    foreach ($variantData['options'] as $optionId => $valueId) {
+                        $variant->options()->attach($optionId, [
+                            'product_id' => $product->id,
+                            'value_id'   => $valueId
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+            $redirectRoute = ($request->has_variation == 'yes') ? 'admin.product.edit' : 'admin.product.index';
+            return redirect()->route($redirectRoute, encrypt($product->id))
+                ->with('success', 'Product and variants initialized successfully.');
         } catch (\Exception $th) {
             DB::rollBack();
-
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Database Error: ' . $th->getMessage());
         }
-    }
-
-    public function show($id)
-    {
-        $pageName = 'Product Detail';
-        $data = Option::findOrFail($this->decryptId($id));
-
-        return view('backend.product.show', [
-            'pageName' => $pageName,
-            'data' => $data,
-        ]);
     }
 
     public function edit($id)
     {
         $pageName = 'Edit Product';
-        $data = Option::findOrFail($this->decryptId($id));
+        $data = Product::findOrFail($this->decryptId($id));
+        $brands = Brand::get();
+        $categories = Category::where('is_parent', 'yes')->get();
+        $subCategories = Category::get();
 
-        return view('backend.product.edit', compact('pageName', 'data'));
+        return view('backend.product.edit', compact('pageName', 'data', 'brands', 'categories', 'subCategories'));
     }
 
     public function update(Request $request, $id)
     {
-        $option = Option::findOrFail($this->decryptId($id));
+        $data = Product::findOrFail($this->decryptId($id));
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'status' => ['required'],
+            'category_id' => ['required'],
+            'brand_id' => ['required'],
+            'sub_category_id' => ['required'],
+            'short_description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
         ]);
         try {
             DB::beginTransaction();
             $validated['slug'] = Str::slug($validated['name']);
-            $option->update($validated);
+            $data->update($validated);
             DB::commit();
-
-            return redirect()->route('admin.product.index')->with('success', 'Option updated successfully');
+            return redirect()->route('admin.product.index')->with('success', 'Product updated successfully');
         } catch (\Exception $th) {
             DB::rollBack();
-
             return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
         }
     }
 
     public function destroy($id)
     {
-        $data = Option::findOrFail($this->decryptId($id));
+        $data = Product::findOrFail($this->decryptId($id));
         $data->delete();
 
         return redirect()
             ->route('admin.product.index')
-            ->with('success', 'Option deleted successfully');
+            ->with('success', 'Product deleted successfully');
     }
 }

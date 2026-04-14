@@ -1,0 +1,257 @@
+<form action="{{ route('admin.product.update', encrypt($data->id)) }}" method="POST">
+    @csrf @method('PATCH')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-9">
+                <div class="card shadow-lg mb-4 border-0 rounded-3">
+                    <div class="card-header bg-primary ">
+                        <h5 class="mb-0 text-white"><i class="fa fa-info-circle me-2"></i>Master Information</h5>
+                    </div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Product Name</label>
+                            <input class="form-control" name="name" value="{{ $data->name }}" type="text"
+                                required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Brand</label>
+                            <select class="form-select" name="brand_id">
+                                @foreach ($brands as $brand)
+                                    <option value="{{ $brand->id }}"
+                                        {{ $data->brand_id == $brand->id ? 'selected' : '' }}>
+                                        {{ $brand->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Origin</label>
+                            <input class="form-control" name="origin" value="{{ $data->origin }}" type="text" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category_id" id="floatingSelectCategory">
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->id }}"
+                                        {{ $data->category_id == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Sub Category</label>
+                            <select class="form-select" name="sub_category_id" id="floatingSelectSubCategory">
+                                <option selected disabled>Select Sub Category</option>
+                                @foreach ($subCategories as $sub_cat)
+                                    <option value="{{ $sub_cat->id }}"
+                                        {{ $data->sub_category_id == $sub_cat->id ? 'selected' : '' }}>
+                                        {{ $sub_cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status">
+                                <option value="active" {{ $data->status == 'active' ? 'selected' : '' }}>Active
+                                </option>
+                                <option value="inactive" {{ $data->status == 'inactive' ? 'selected' : '' }}>Inactive
+                                </option>
+                                <option value="draft" {{ $data->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-lg mb-4 border-0 rounded-3">
+                    <div class="card-header bg-dark ">
+                        <h5 class="text-white"><i class="fa fa-align-left me-2"></i>Description & Tags</h5>
+                    </div>
+                    <div class="card-body row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Tags</label>
+                            <textarea class="form-control" name="tags" rows="2">{{ $data->tags }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Short Description</label>
+                            <textarea class="form-control tinymce-editor" name="short_description">{{ $data->short_description }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Full Description</label>
+                            <textarea class="form-control tinymce-editor" name="description">{{ $data->description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-lg mb-4 border-0 rounded-3">
+                    <div class="card-header bg-warning">
+                        <h5 class="text-white"><i class="fa fa-image me-2"></i>Images & Gallery</h5>
+                    </div>
+                    <div class="card-body row g-3">
+                        <div class="col-12">
+                            <label>Featured Image</label>
+                            <div class="input-group">
+                                <button id="featured" data-input="featured_thumbnail" data-preview="featured_holder"
+                                    class="btn btn-warning text-white" type="button">
+                                    <i class="fa fa-image"></i> Choose
+                                </button>
+                                <input id="featured_thumbnail" class="form-control" type="text" name="featured_image"
+                                    value="{{ old('featured_image') }}">
+                            </div>
+                        </div>
+                        <div id="featured_holder" class="mt-2"></div>
+                        <div class="col-12">
+                            <label>Gallery Images</label>
+                            <div class="input-group">
+                                <button id="gallery" data-input="gallery_thumbnail" data-preview="gallery_holder"
+                                    class="btn btn-warning text-white" type="button">
+                                    <i class="fa fa-image"></i> Choose
+                                </button>
+                                <input id="gallery_thumbnail" class="form-control" type="text" name="gallery_image"
+                                    value="{{ old('gallery_image') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="card shadow-lg mb-4 border-0 rounded-3">
+                    @if ($data->has_variation == 'no')
+                        <div class="card-header bg-success">
+                            <h5 class="text-white"><i class="fa fa-rupee-sign me-2"></i>Pricing & Inventory</h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Base Price</label>
+                                <input type="number" step="0.01" class="form-control" name="base_price"
+                                    value="{{ $data->base_price }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">MRP</label>
+                                <input type="number" step="0.01" class="form-control" name="mrp"
+                                    value="{{ $data->mrp }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">GST</label>
+                                <input type="number" class="form-control" name="gst"
+                                    value="{{ $data->gst }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Discount Type</label>
+                                <select class="form-select" name="discount_type">
+                                    <option value="fixed" {{ $data->discount_type == 'fixed' ? 'selected' : '' }}>
+                                        Fixed
+                                    </option>
+                                    <option value="percentage"
+                                        {{ $data->discount_type == 'percentage' ? 'selected' : '' }}>
+                                        Percentage</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Discount Value</label>
+                                <input type="number" class="form-control" name="discount"
+                                    value="{{ $data->discount }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Sell Price</label>
+                                <input type="number" step="0.01" class="form-control" name="sell_price"
+                                    value="{{ $data->sell_price }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">SKU</label>
+                                <input type="text" class="form-control" name="sku"
+                                    value="{{ $data->sku }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">HSN Code</label>
+                                <input type="text" class="form-control" name="hsn_code"
+                                    value="{{ $data->hsn_code }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Bar Code</label>
+                                <input type="text" class="form-control" name="bar_code"
+                                    value="{{ $data->bar_code }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Weight</label>
+                                <input type="text" class="form-control" name="weight"
+                                    value="{{ $data->weight }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Dimension</label>
+                                <input type="text" class="form-control" name="dimension"
+                                    value="{{ $data->dimension }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Refundable</label>
+                                <select class="form-select" name="refundable">
+                                    <option value="no" {{ $data->refundable == 'no' ? 'selected' : '' }}>No
+                                    </option>
+                                    <option value="yes" {{ $data->refundable == 'yes' ? 'selected' : '' }}>Yes
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Refund Limit ( In Days)</label>
+                                <input type="text" class="form-control" name="refund_limit"
+                                    value="{{ $data->refund_limit }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Current Stock</label>
+                                <input type="number" class="form-control" name="stock"
+                                    value="{{ $data->stock }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Stock Status</label>
+                                <select class="form-select" name="stock_status">
+                                    <option value="in_stock"
+                                        {{ $data->stock_status == 'in_stock' ? 'selected' : '' }}>In
+                                        Stock
+                                    </option>
+                                    <option value="out_of_stock"
+                                        {{ $data->stock_status == 'out_of_stock' ? 'selected' : '' }}>Out
+                                        of Stock</option>
+                                    <option value="low_stock"
+                                        {{ $data->stock_status == 'low_stock' ? 'selected' : '' }}>
+                                        Low
+                                        Stock
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Low Stock</label>
+                                <input type="number" class="form-control" name="low_stock"
+                                    value="{{ $data->low_stock }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Min Order</label>
+                                <input type="number" class="form-control" name="min_order"
+                                    value="{{ $data->min_order }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Max Order</label>
+                                <input type="number" class="form-control" name="max_order"
+                                    value="{{ $data->max_order }}">
+                            </div>
+                            <div class="col-md-12 form-check">
+                                <input class="form-check-input" name="top_product" id="flexChecktopProduct"
+                                    type="checkbox" value="{{ $data->top_product }}" />
+                                <label class="form-check-label" for="flexChecktopProduct">Top Product</label>
+                            </div>
+                            <div class="col-md-12 form-check">
+                                <input class="form-check-input" name="featured_product" id="flexCheckfeaturedProduct"
+                                    type="checkbox" value="{{ $data->featured_product }}" />
+                                <label class="form-check-label" for="flexCheckfeaturedProduct">Featured
+                                    Product</label>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="card-footer">
+                        <div class="col-12 mt-4 text-center">
+                            <a href="{{ route('admin.product.index') }}"
+                                class="btn btn-phoenix-primary px-5 btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-success btn-sm">Update Master Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

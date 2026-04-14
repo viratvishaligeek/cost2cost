@@ -25,8 +25,8 @@
                     <div class="form-floating">
                         <select name="is_parent" class="form-control" id="isParentCat">
                             <option selected disabled> Select an Option</option>
-                            <option value="yes" {{ old('is_parent') == 'yes' ? 'selected' : '' }}>Yes</option>
                             <option value="no" {{ old('is_parent') == 'no' ? 'selected' : '' }}>No</option>
+                            <option value="yes" {{ old('is_parent') == 'yes' ? 'selected' : '' }}>Yes</option>
                         </select>
                         <label>Is Parent Category ?</label>
                     </div>
@@ -103,7 +103,7 @@
     <script>
         $(document).ready(function() {
             $('#isParentCat').change(function() {
-                if ($(this).val() === 'yes') {
+                if ($(this).val() === 'no') {
                     $('#catOption').removeClass('d-none');
                 } else {
                     $('#catOption').addClass('d-none');

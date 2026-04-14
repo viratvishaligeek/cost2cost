@@ -26,15 +26,15 @@
                     <div class="form-floating">
                         <select name="is_parent" class="form-control" id="isParentCat">
                             <option selected disabled> Select an Option</option>
-                            <option value="yes" {{ old('is_parent') ?? $data->is_parent == 'yes' ? 'selected' : '' }}>Yes
-                            </option>
                             <option value="no" {{ old('is_parent') ?? $data->is_parent == 'no' ? 'selected' : '' }}>No
+                            </option>
+                            <option value="yes" {{ old('is_parent') ?? $data->is_parent == 'yes' ? 'selected' : '' }}>Yes
                             </option>
                         </select>
                         <label>Is Parent Category ?</label>
                     </div>
                 </div>
-                <div class="col-12 d-none" id="catOption">
+                <div class="col-12 {{ $data->is_parent == 'yes' ? 'd-none' : '' }}" id="catOption">
                     <div class="form-floating">
                         <select class="form-select" name="parent_id" required>
                             <option disabled selected>Select Category</option>
@@ -52,7 +52,8 @@
                     <div class="form-floating">
                         <select class="form-select" name="status" required>
                             <option disabled selected>Select Status</option>
-                            <option value="active" {{ old('status') ?? $data->status == 'active' ? 'selected' : '' }}>Active
+                            <option value="active" {{ old('status') ?? $data->status == 'active' ? 'selected' : '' }}>
+                                Active
                             </option>
                             <option value="inactive" {{ old('status') ?? $data->status == 'inactive' ? 'selected' : '' }}>
                                 In Active</option>
@@ -110,7 +111,7 @@
     <script>
         $(document).ready(function() {
             $('#isParentCat').change(function() {
-                if ($(this).val() === 'yes') {
+                if ($(this).val() === 'no') {
                     $('#catOption').removeClass('d-none');
                 } else {
                     $('#catOption').addClass('d-none');

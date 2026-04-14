@@ -20,7 +20,7 @@ class BlogApiController extends Controller
 
         $cacheKey = "blogs_tenant_{$tenantId}_page_{$page}_per_{$perPage}";
 
-        $blogs = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $perPage) {
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $perPage) {
             return Blog::withoutGlobalScope('tenant_filter')
                 ->where('tenant_id', $tenantId)
                 ->where('status', 'published')
@@ -36,14 +36,14 @@ class BlogApiController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'success',
-            'data' => $blogs->items(),
+            'data' => $data->items(),
             'pagination' => [
-                'total'        => $blogs->total(),
-                'per_page'     => $blogs->perPage(),
-                'current_page' => $blogs->currentPage(),
-                'last_page'    => $blogs->lastPage(),
-                'next_page_url' => $blogs->nextPageUrl(),
-                'prev_page_url' => $blogs->previousPageUrl(),
+                'total'        => $data->total(),
+                'per_page'     => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'last_page'    => $data->lastPage(),
+                'next_page_url' => $data->nextPageUrl(),
+                'prev_page_url' => $data->previousPageUrl(),
             ],
         ], 200);
     }
@@ -62,7 +62,7 @@ class BlogApiController extends Controller
 
         $cacheKey = "blogs_tenant_{$tenantId}_cat_{$categoryId}_page_{$page}_per_{$perPage}";
 
-        $blogs = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $categoryId, $perPage) {
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $categoryId, $perPage) {
             return Blog::withoutGlobalScope('tenant_filter')
                 ->where('tenant_id', $tenantId)
                 ->where('category_id', $categoryId)
@@ -79,14 +79,14 @@ class BlogApiController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'success',
-            'data' => $blogs->items(),
+            'data' => $data->items(),
             'pagination' => [
-                'total'        => $blogs->total(),
-                'per_page'     => $blogs->perPage(),
-                'current_page' => $blogs->currentPage(),
-                'last_page'    => $blogs->lastPage(),
-                'next_page_url' => $blogs->nextPageUrl(),
-                'prev_page_url' => $blogs->previousPageUrl(),
+                'total'        => $data->total(),
+                'per_page'     => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'last_page'    => $data->lastPage(),
+                'next_page_url' => $data->nextPageUrl(),
+                'prev_page_url' => $data->previousPageUrl(),
             ],
         ], 200);
     }

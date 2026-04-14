@@ -12,8 +12,7 @@
              <a class="navbar-brand me-1 me-sm-3" href="">
                  <div class="d-flex align-items-center">
                      <div class="d-flex align-items-center">
-                         <img src="{{ URL::asset('backend') }}/img/icons/logo.png" alt="phoenix" width="27" />
-                         <h5 class="logo-text ms-2 d-none d-sm-block">phoenix</h5>
+                         <img src="{{ URL::asset('backend') }}/img/logo.jpg" alt="Magnus" width="90%" />
                      </div>
                  </div>
              </a>

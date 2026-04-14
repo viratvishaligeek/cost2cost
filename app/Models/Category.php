@@ -21,7 +21,7 @@ class Category extends Model
         'slug',
         'parent_id',
         'tenant_id',
-        'is_parent',
+        'is_parent',  // yes, no
         'featured_image',
         'description',
         'status',

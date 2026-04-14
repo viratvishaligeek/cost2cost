@@ -17,44 +17,36 @@ class Variant extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'id',
+        'name',
         'product_id',
         'combo',
-        'name',
-        'dimension',
-        'weight',
-        'gst',
-        'mrp',
-        'discount_type',
-        'discount_erp',
-        'discount_web',
-        'discount_app',
-        'low_stock',
-        'sell_erp',
-        'sell_web',
-        'sell_app',
-        'min_order',
-        'base_erp',
-        'base_web',
-        'base_app',
-        'max_order',
-        'isbn',
-        'version',
-        'old_isbn',
-        'on_rent',
-        'security_amount',
-        'rent_amount',
-        'rent_return',
-        'status',
-        'stock',
         'refundable',
         'refund_limit',
+        'sku',
+        'bar_code',
+        'hsn_code',
+        'base_price',
+        'gst',
+        'mrp',
+        'sell_price',
+        'discount_type',
+        'discount',
+        'weight',
+        'dimension',
+        'stock',
+        'stock_status',
+        'low_stock',
+        'min_order',
+        'max_order',
         'short_description',
         'description',
-        'toc',
-        'syllabus',
+        'additional_details',
+        'ingredients',
         'tags',
         'default',
+        'status',
+        'draft',
+        'tenant_id',
     ];
 
     public function tenant()
@@ -69,10 +61,10 @@ class Variant extends Model
 
     public function options()
     {
-        return $this->belongsToMany(Option::class, 'variant_options')
-            ->withPivot('value_id');
+        return $this->belongsToMany(Option::class, 'variant_options', 'variant_id', 'option_id')
+            ->withPivot('value_id', 'product_id')
+            ->withTimestamps();
     }
-
     protected $hidden = [
         'tenant_id',
         'created_at',

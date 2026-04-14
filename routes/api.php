@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\BlogApiController;
 use App\Http\Controllers\Api\BlogCatApiController;
 use App\Http\Controllers\Api\ContactFormApiController;
+use App\Http\Controllers\Api\ProductApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'as' => 'v1.', 'middleware' => ['tenant']], function () {
@@ -15,5 +16,8 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.', 'middleware' => ['tenant']], func
     });
     Route::controller(ContactFormApiController::class)->group(function () {
         Route::post('form-submit', 'formSubmit');
+    });
+    Route::controller(ProductApiController::class)->group(function () {
+        Route::get('products', 'index');
     });
 });

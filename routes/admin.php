@@ -48,7 +48,9 @@ Route::prefix('admin')->as('admin.')->group(function () {
         // product module routes
         Route::resource('brand', BrandController::class);
         Route::resource('category', CategoryController::class);
+        Route::get('product/get-subcategories/{id}', [CategoryController::class, 'getSubCategories'])->name('product.get-subcategories');
         Route::resource('options', OptionController::class);
+        Route::post('options/get-values', [OptionController::class, 'getOptionValues'])->name('options.get-values');
         Route::resource('option-value', OptionValueController::class);
         Route::resource('product', ProductController::class);
         Route::resource('variant', VariantController::class);

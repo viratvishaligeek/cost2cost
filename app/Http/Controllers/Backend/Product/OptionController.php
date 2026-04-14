@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\Option;
+use App\Models\OptionValue;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -153,5 +154,12 @@ class OptionController extends Controller
         return redirect()
             ->route('admin.options.index')
             ->with('success', 'Option deleted successfully');
+    }
+
+    public function getOptionValues(Request $request)
+    {
+        $option = Option::find($request->id);
+        $values = OptionValue::where('option_id', $request->id)->get();
+        return response()->json(['status' => 1, 'option' => $option, 'values' => $values]);
     }
 }

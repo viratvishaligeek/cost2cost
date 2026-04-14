@@ -78,7 +78,7 @@ class CategoryController extends Controller
     public function create()
     {
         $pageName = 'Create Product Category';
-        $parent = Category::get();
+        $parent = Category::where('is_parent', 'yes')->get();
 
         return view('backend.category.create', compact('pageName', 'parent'));
     }
@@ -122,7 +122,7 @@ class CategoryController extends Controller
     {
         $pageName = 'Edit Category Post';
         $data = Category::findOrFail($this->decryptId($id));
-        $parent = Category::get();
+        $parent = Category::where('is_parent', 'yes')->get();
 
         return view('backend.category.edit', compact('pageName', 'data', 'parent'));
     }
@@ -160,5 +160,16 @@ class CategoryController extends Controller
         return redirect()
             ->route('admin.category.index')
             ->with('success', 'Category deleted successfully');
+    }
+
+    // ----------- ajax return sub category list json
+
+    public function getSubCategories($id)
+    {
+        $subCategories = Category::where('parent_id', $id)->get();
+        return response()->json([
+            'data' => $subCategories,
+            'success' => true,
+        ]);
     }
 }
