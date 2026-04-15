@@ -10,22 +10,23 @@
                     <div class="card-body row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Product Name</label>
-                            <input class="form-control" name="name" value="{{ $data->name }}" type="text"
-                                required />
+                            <input class="form-control" name="name" value="{{ $data->name ?? old('name') }}"
+                                type="text" required />
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Brand</label>
                             <select class="form-select" name="brand_id">
                                 @foreach ($brands as $brand)
                                     <option value="{{ $brand->id }}"
-                                        {{ $data->brand_id == $brand->id ? 'selected' : '' }}>
+                                        {{ $data->brand_id ?? old('brand_id') == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Origin</label>
-                            <input class="form-control" name="origin" value="{{ $data->origin }}" type="text" />
+                            <input class="form-control" name="origin" value="{{ $data->origin ?? old('origin') }}"
+                                type="text" />
                         </div>
 
                         <div class="col-md-4">
@@ -33,7 +34,7 @@
                             <select class="form-select" name="category_id" id="floatingSelectCategory">
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}"
-                                        {{ $data->category_id == $cat->id ? 'selected' : '' }}>
+                                        {{ $data->category_id ?? old('category_id') == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}</option>
                                 @endforeach
                             </select>
@@ -44,7 +45,7 @@
                                 <option selected disabled>Select Sub Category</option>
                                 @foreach ($subCategories as $sub_cat)
                                     <option value="{{ $sub_cat->id }}"
-                                        {{ $data->sub_category_id == $sub_cat->id ? 'selected' : '' }}>
+                                        {{ $data->sub_category_id ?? old('sub_category_id') == $sub_cat->id ? 'selected' : '' }}>
                                         {{ $sub_cat->name }}</option>
                                 @endforeach
                             </select>
@@ -52,11 +53,14 @@
                         <div class="col-md-4">
                             <label class="form-label">Status</label>
                             <select class="form-select" name="status">
-                                <option value="active" {{ $data->status == 'active' ? 'selected' : '' }}>Active
+                                <option value="active"
+                                    {{ $data->status ?? old('status') == 'active' ? 'selected' : '' }}>Active
                                 </option>
-                                <option value="inactive" {{ $data->status == 'inactive' ? 'selected' : '' }}>Inactive
+                                <option value="inactive"
+                                    {{ $data->status ?? old('status') == 'inactive' ? 'selected' : '' }}>Inactive
                                 </option>
-                                <option value="draft" {{ $data->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="draft"
+                                    {{ $data->status ?? old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                             </select>
                         </div>
                     </div>
@@ -68,15 +72,15 @@
                     <div class="card-body row g-3">
                         <div class="col-12">
                             <label class="form-label">Tags</label>
-                            <textarea class="form-control" name="tags" rows="2">{{ $data->tags }}</textarea>
+                            <textarea class="form-control" name="tags" rows="2">{{ $data->tags ?? old('tags') }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Short Description</label>
-                            <textarea class="form-control tinymce-editor" name="short_description">{{ $data->short_description }}</textarea>
+                            <textarea class="form-control tinymce-editor" name="short_description">{{ $data->short_description ?? old('short_description') }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Full Description</label>
-                            <textarea class="form-control tinymce-editor" name="description">{{ $data->description }}</textarea>
+                            <textarea class="form-control tinymce-editor" name="description">{{ $data->description ?? old('description') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -85,7 +89,7 @@
                         <h5 class="text-white"><i class="fa fa-image me-2"></i>Images & Gallery</h5>
                     </div>
                     <div class="card-body row g-3">
-                        <div class="col-12">
+                        <div class="col-8">
                             <label>Featured Image</label>
                             <div class="input-group">
                                 <button id="featured" data-input="featured_thumbnail" data-preview="featured_holder"
@@ -93,10 +97,21 @@
                                     <i class="fa fa-image"></i> Choose
                                 </button>
                                 <input id="featured_thumbnail" class="form-control" type="text" name="featured_image"
-                                    value="{{ old('featured_image') }}">
+                                    value="{{ old('featured_image', $images?->featured_image) }}">
                             </div>
                         </div>
-                        <div id="featured_holder" class="mt-2"></div>
+                        <div class="col-4">
+                            <style>
+                                #featured_holder img {
+                                    height: 100% !important;
+                                    width: 40% !important;
+                                    border: 1px black solid;
+                                    border-radius: 12px;
+                                }
+                            </style>
+                            <div id="featured_holder" class="mt-2"></div>
+                        </div>
+                        {{-- ---------------------------------------------------- --}}
                         <div class="col-12">
                             <label>Gallery Images</label>
                             <div class="input-group">
@@ -105,7 +120,80 @@
                                     <i class="fa fa-image"></i> Choose
                                 </button>
                                 <input id="gallery_thumbnail" class="form-control" type="text" name="gallery_image"
-                                    value="{{ old('gallery_image') }}">
+                                    value="{{ old('gallery_image', $images?->gallery) }}">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <style>
+                                #gallery_holder img {
+                                    height: 100% !important;
+                                    width: 100px !important;
+                                    border: 1px black solid;
+                                    margin: 10px;
+                                    padding: 10px;
+                                    border-radius: 12px;
+                                }
+                            </style>
+                            <div id="gallery_holder" class="row mt-3 g-2"></div>
+                        </div>
+                        {{-- ---------------------------------------------- --}}
+                        <div class="col-12">
+                            <label>LifeStyles Images</label>
+                            <div class="input-group">
+                                <button id="lifestyle" data-input="lifestyle_thumbnail"
+                                    data-preview="lifestyle_holder" class="btn btn-warning text-white"
+                                    type="button">
+                                    <i class="fa fa-image"></i> Choose
+                                </button>
+                                <input id="lifestyle_thumbnail" class="form-control" type="text" name="lifestyle"
+                                    value="{{ old('lifestyle', $images?->lifestyle) }}">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <style>
+                                #lifestyle_holder img {
+                                    height: 100% !important;
+                                    width: 100px !important;
+                                    border: 1px black solid;
+                                    margin: 10px;
+                                    padding: 10px;
+                                    border-radius: 12px;
+                                }
+                            </style>
+                            <div id="lifestyle_holder" class="row mt-3 g-2"></div>
+                        </div>
+                        {{-- ---------------------------------------------------------- --}}
+                        <div class="col-12">
+                            <label>Infographics Images</label>
+                            <div class="input-group">
+                                <button id="infographics" data-input="infographics_thumbnail"
+                                    data-preview="infographics_holder" class="btn btn-warning text-white"
+                                    type="button">
+                                    <i class="fa fa-image"></i> Choose
+                                </button>
+                                <input id="infographics_thumbnail" class="form-control" type="text"
+                                    name="infographics" value="{{ old('infographics', $images?->infographics) }}">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <style>
+                                #infographics_holder img {
+                                    height: 100% !important;
+                                    width: 100px !important;
+                                    border: 1px black solid;
+                                    margin: 10px;
+                                    padding: 10px;
+                                    border-radius: 12px;
+                                }
+                            </style>
+                            <div id="infographics_holder" class="row mt-3 g-2"></div>
+                        </div>
+                        <div class="col-12">
+                            <label>Video URL only ( Coma Saperated )</label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="video"
+                                    value="{{ old('video', $images?->video) }}"
+                                    placeholder="https://video.com,https://anothervideo.com">
                             </div>
                         </div>
                     </div>
@@ -121,123 +209,127 @@
                             <div class="col-md-12">
                                 <label class="form-label">Base Price</label>
                                 <input type="number" step="0.01" class="form-control" name="base_price"
-                                    value="{{ $data->base_price }}">
+                                    value="{{ old('base_price') ?? $data->base_price }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">MRP</label>
                                 <input type="number" step="0.01" class="form-control" name="mrp"
-                                    value="{{ $data->mrp }}">
+                                    value="{{ old('mrp') ?? $data->mrp }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">GST</label>
                                 <input type="number" class="form-control" name="gst"
-                                    value="{{ $data->gst }}">
+                                    value="{{ old('gst') ?? $data->gst }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Discount Type</label>
                                 <select class="form-select" name="discount_type">
-                                    <option value="fixed" {{ $data->discount_type == 'fixed' ? 'selected' : '' }}>
+                                    <option value="fixed"
+                                        {{ old('discount_type') ?? $data->discount_type == 'fixed' ? 'selected' : '' }}>
                                         Fixed
                                     </option>
                                     <option value="percentage"
-                                        {{ $data->discount_type == 'percentage' ? 'selected' : '' }}>
+                                        {{ old('discount_type') ?? $data->discount_type == 'percentage' ? 'selected' : '' }}>
                                         Percentage</option>
                                 </select>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Discount Value</label>
                                 <input type="number" class="form-control" name="discount"
-                                    value="{{ $data->discount }}">
+                                    value="{{ old('discount') ?? $data->discount }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Sell Price</label>
                                 <input type="number" step="0.01" class="form-control" name="sell_price"
-                                    value="{{ $data->sell_price }}">
+                                    value="{{ old('sell_price') ?? $data->sell_price }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">SKU</label>
                                 <input type="text" class="form-control" name="sku"
-                                    value="{{ $data->sku }}">
+                                    value="{{ old('sku') ?? $data->sku }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">HSN Code</label>
                                 <input type="text" class="form-control" name="hsn_code"
-                                    value="{{ $data->hsn_code }}">
+                                    value="{{ old('hsn_code') ?? $data->hsn_code }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Bar Code</label>
                                 <input type="text" class="form-control" name="bar_code"
-                                    value="{{ $data->bar_code }}">
+                                    value="{{ old('bar_code') ?? $data->bar_code }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Weight</label>
                                 <input type="text" class="form-control" name="weight"
-                                    value="{{ $data->weight }}">
+                                    value="{{ old('weight') ?? $data->weight }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Dimension</label>
                                 <input type="text" class="form-control" name="dimension"
-                                    value="{{ $data->dimension }}">
+                                    value="{{ old('dimension') ?? $data->dimension }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Refundable</label>
                                 <select class="form-select" name="refundable">
-                                    <option value="no" {{ $data->refundable == 'no' ? 'selected' : '' }}>No
+                                    <option value="no"
+                                        {{ old('refundable') ?? $data->refundable == 'no' ? 'selected' : '' }}>No
                                     </option>
-                                    <option value="yes" {{ $data->refundable == 'yes' ? 'selected' : '' }}>Yes
+                                    <option value="yes"
+                                        {{ old('refundable') ?? $data->refundable == 'yes' ? 'selected' : '' }}>Yes
                                     </option>
                                 </select>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Refund Limit ( In Days)</label>
                                 <input type="text" class="form-control" name="refund_limit"
-                                    value="{{ $data->refund_limit }}">
+                                    value="{{ old('refund_limit') ?? $data->refund_limit }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Current Stock</label>
                                 <input type="number" class="form-control" name="stock"
-                                    value="{{ $data->stock }}">
+                                    value="{{ old('stock') ?? $data->stock }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Stock Status</label>
                                 <select class="form-select" name="stock_status">
                                     <option value="in_stock"
-                                        {{ $data->stock_status == 'in_stock' ? 'selected' : '' }}>In
-                                        Stock
+                                        {{ old('stock_status') ?? $data->stock_status == 'in_stock' ? 'selected' : '' }}>
+                                        In Stock
                                     </option>
                                     <option value="out_of_stock"
-                                        {{ $data->stock_status == 'out_of_stock' ? 'selected' : '' }}>Out
-                                        of Stock</option>
+                                        {{ old('stock_status') ?? $data->stock_status == 'out_of_stock' ? 'selected' : '' }}>
+                                        Out of Stock</option>
                                     <option value="low_stock"
-                                        {{ $data->stock_status == 'low_stock' ? 'selected' : '' }}>
-                                        Low
-                                        Stock
+                                        {{ old('stock_status') ?? $data->stock_status == 'low_stock' ? 'selected' : '' }}>
+                                        Low Stock
                                     </option>
                                 </select>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Low Stock</label>
                                 <input type="number" class="form-control" name="low_stock"
-                                    value="{{ $data->low_stock }}">
+                                    value="{{ old('low_stock') ?? $data->low_stock }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Min Order</label>
                                 <input type="number" class="form-control" name="min_order"
-                                    value="{{ $data->min_order }}">
+                                    value="{{ old('min_order') ?? $data->min_order }}">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Max Order</label>
                                 <input type="number" class="form-control" name="max_order"
-                                    value="{{ $data->max_order }}">
+                                    value="{{ old('max_order') ?? $data->max_order }}">
                             </div>
                             <div class="col-md-12 form-check">
                                 <input class="form-check-input" name="top_product" id="flexChecktopProduct"
-                                    type="checkbox" value="{{ $data->top_product }}" />
+                                    type="checkbox" value="1"
+                                    {{ old('top_product', $data->top_product) ? 'checked' : '' }} />
                                 <label class="form-check-label" for="flexChecktopProduct">Top Product</label>
                             </div>
                             <div class="col-md-12 form-check">
                                 <input class="form-check-input" name="featured_product" id="flexCheckfeaturedProduct"
-                                    type="checkbox" value="{{ $data->featured_product }}" />
+                                    type="checkbox" value="1"
+                                    {{ old('top_product', $data->featured_product) ? 'checked' : '' }} />
                                 <label class="form-check-label" for="flexCheckfeaturedProduct">Featured
                                     Product</label>
                             </div>

@@ -8,10 +8,12 @@ use App\Models\Category;
 use App\Models\Option;
 use App\Models\OptionValue;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -132,38 +134,100 @@ class ProductController extends Controller
         }
     }
 
+
     public function edit($id)
     {
         $pageName = 'Edit Product';
-        $data = Product::findOrFail($this->decryptId($id));
+        $productId = $this->decryptId($id);
+        $data = Product::with('variants')->findOrFail($productId);
+        $images = ProductImage::where('product_id', $data->id)->first();
         $brands = Brand::get();
         $categories = Category::where('is_parent', 'yes')->get();
         $subCategories = Category::get();
 
-        return view('backend.product.edit', compact('pageName', 'data', 'brands', 'categories', 'subCategories'));
+        return view('backend.product.edit', compact(
+            'pageName',
+            'data',
+            'brands',
+            'categories',
+            'subCategories',
+            'images',
+        ));
     }
 
     public function update(Request $request, $id)
     {
         $data = Product::findOrFail($this->decryptId($id));
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'status' => ['required'],
-            'category_id' => ['required'],
-            'brand_id' => ['required'],
-            'sub_category_id' => ['required'],
+            'name' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($data->id)],
+            'brand_id' => ['nullable', 'exists:brands,id'],
+            'category_id' => ['nullable', 'exists:categories,id'],
+            'sub_category_id' => ['nullable', 'exists:categories,id'],
+            'origin' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'in:active,inactive,draft'],
+            'tags' => ['nullable', 'string'],
             'short_description' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
+            'featured_image' => ['nullable', 'string'],
+            'gallery_image' => ['nullable', 'string'],
+            'base_price' => ['nullable', 'numeric', 'min:0'],
+            'mrp' => ['nullable', 'numeric', 'min:0', 'gte:base_price'],
+            'sell_price' => ['nullable', 'numeric', 'min:0', 'lte:mrp'],
+            'gst' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'discount_type' => ['nullable', 'in:fixed,percentage'],
+            'discount' => ['nullable', 'numeric', 'min:0'],
+            'sku' => ['nullable', 'string', 'max:50', Rule::unique('products')->ignore($data->id)],
+            'hsn_code' => ['nullable', 'string', 'max:50'],
+            'bar_code' => ['nullable', 'string', 'max:50'],
+            'weight' => ['nullable', 'numeric', 'min:0'],
+            'dimension' => ['nullable', 'string', 'max:50'],
+            'refundable' => ['nullable', 'in:yes,no'],
+            'refund_limit' => ['nullable', 'string', 'max:50'],
+            'stock' => ['nullable', 'integer', 'min:0'],
+            'stock_status' => ['nullable', 'in:in_stock,out_of_stock,low_stock'],
+            'low_stock' => ['nullable', 'integer', 'min:0'],
+            'min_order' => ['nullable', 'integer', 'min:1'],
+            'max_order' => ['nullable', 'integer', 'gte:min_order'],
+            'top_product' => ['nullable'],
+            'featured_product' => ['nullable'],
         ]);
         try {
             DB::beginTransaction();
-            $validated['slug'] = Str::slug($validated['name']);
+            if (($validated['stock'] ?? 0) == 0) {
+                $validated['stock_status'] = 'out_of_stock';
+            }
+            if ($request->discount_type === 'percentage' && $request->discount > 100) {
+                return back()->with('error', 'Percentage cannot be more than 100')->withInput();
+            }
+            if ($request->discount_type === 'fixed' && $request->discount > ($request->mrp ?? 0)) {
+                return back()->with('error', 'Discount cannot be more than MRP')->withInput();
+            }
+            $slug = Str::slug($validated['name']);
+            $count = Product::where('slug', 'LIKE', "{$slug}%")
+                ->where('id', '!=', $data->id)->count();
+            $validated['slug'] = $count ? "{$slug}-{$count}" : $slug;
+            $validated['top_product'] = $request->has('top_product');
+            $validated['featured_product'] = $request->has('featured_product');
             $data->update($validated);
+            $existingImage = ProductImage::where('product_id', $data->id)->first();
+            $imageData = [
+                'product_id' => $data->id,
+                'featured_image' => $validated['featured_image'] ?? $existingImage?->featured_image,
+                'gallery' => $validated['gallery_image'] ?? $existingImage?->gallery,
+                'lifestyle' => $request->lifestyle ?? $existingImage?->lifestyle,
+                'infographics' => $request->infographics ?? $existingImage?->infographics,
+                'video' => $request->video ?? $existingImage?->video,
+            ];
+
+            ProductImage::updateOrCreate(
+                ['product_id' => $data->id],
+                $imageData
+            );
             DB::commit();
             return redirect()->route('admin.product.index')->with('success', 'Product updated successfully');
         } catch (\Exception $th) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Something went wrong while saving data. ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Something went wrong: ' . $th->getMessage());
         }
     }
 
@@ -171,7 +235,6 @@ class ProductController extends Controller
     {
         $data = Product::findOrFail($this->decryptId($id));
         $data->delete();
-
         return redirect()
             ->route('admin.product.index')
             ->with('success', 'Product deleted successfully');

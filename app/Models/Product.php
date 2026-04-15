@@ -58,6 +58,21 @@ class Product extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function subCategory()
+    {
+        return $this->belongsTo(Category::class, 'sub_category_id');
+    }
+
+    public function images()
+    {
+        return $this->hasOne(ProductImage::class);
+    }
+
     public function options()
     {
         return $this->hasMany(Option::class);

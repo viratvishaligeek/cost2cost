@@ -93,15 +93,14 @@ return new class extends Migration
 
         Schema::create('product_images', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('product_id');
-            $table->bigInteger('variant_id');
+            $table->bigInteger('product_id')->index();
+            $table->bigInteger('variant_id')->nullable();
             $table->string('featured_image')->nullable();
             $table->longText('gallery')->nullable();
             $table->longText('lifestyle')->nullable();
             $table->longText('infographics')->nullable();
             $table->longText('video')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

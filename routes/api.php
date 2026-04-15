@@ -19,5 +19,6 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.', 'middleware' => ['tenant']], func
     });
     Route::controller(ProductApiController::class)->group(function () {
         Route::get('products', 'index');
+        Route::get('product/{slug}', 'productDetail');
     });
 });

@@ -9,25 +9,27 @@
         <div class="col-12">
             <ul class="nav nav-underline optionChainTableHeader gap-0 flex-nowrap scrollbar mb-4" id="productTab"
                 role="tablist">
+                <!-- GENERAL -->
                 <li class="nav-item">
-                    <a class="nav-link pt-0 text-nowrap active ps-0 pe-3 " id="tab-chart" href="#tab-general"
-                        data-bs-toggle="tab" role="tab" aria-controls="tab-general" aria-selected="true">General
-                        Information</a>
+                    <a class="nav-link pt-0 text-nowrap ps-0 pe-3 {{ request()->routeIs('admin.product.edit') ? 'active' : '' }}"
+                        href="{{ route('admin.product.edit', encrypt($data->id)) }}">
+                        General Information
+                    </a>
                 </li>
-                @if ($data->has_variation == 'yes')
-                    @foreach ($data->variants as $variant)
-                        <li class="nav-item">
-                            <a class="nav-link pt-0 text-nowrap px-3"
-                                href="{{ route('admin.variant.edit', encrypt($variant->id)) }}">
-                                {{ $variant->combo }}
-                            </a>
-                        </li>
-                    @endforeach
-                @endif
+                <!-- VARIANTS -->
+                @foreach ($data->variants as $item)
+                    <li class="nav-item">
+                        <a class="nav-link pt-0 text-nowrap px-3
+                                     {{ request()->routeIs('admin.variant.edit') && $variant->id == $item->id ? 'active' : '' }}"
+                            href="{{ route('admin.variant.edit', encrypt($item->id)) }}">
+                            {{ $item->combo }}
+                        </a>
+                    </li>
+                @endforeach
             </ul>
             <div class="tab-content mt-4" id="productTabContent">
                 <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
-                    @include('backend.product.partial.edit_general')
+                    @include('backend.product.partial.edit_variant')
                 </div>
             </div>
         </div>
@@ -36,6 +38,7 @@
 @section('script')
     <script src="{{ URL::asset('backend') }}/tinymce/tinymce.min.js"></script>
     <script src="{{ URL::asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#featured').filemanager('image');
@@ -63,22 +66,22 @@
                 promotion: false,
             });
 
-            // select category
-            $('#floatingSelectCategory').change(function() {
-                const catId = $(this).val();
-                $.get("{{ route('admin.product.get-subcategories', ':id') }}".replace(':id', catId),
-                    function(response) {
-                        let subCat = $('#floatingSelectSubCategory').empty().append(
-                            '<option selected disabled>Select Sub Category</option>');
-                        if (response.success) {
-                            $.each(response.data, function(i, item) {
-                                subCat.append(
-                                    `<option value="${item.id}">${item.name}</option>`);
-                            });
-                        }
+            // delete variation asking popup
+            $(document).on('click', '.confirm-button', function(e) {
+                e.preventDefault();
+                let form = $(this).closest("form");
+                swal({
+                        title: "Delete Variant?",
+                        text: "Wapas nahi aayega data!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) form.submit();
                     });
             });
+
         });
-        // ------------------------------------------
     </script>
 @endsection

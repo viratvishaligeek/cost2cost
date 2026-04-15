@@ -38,14 +38,9 @@ class Variant extends Model
         'low_stock',
         'min_order',
         'max_order',
-        'short_description',
-        'description',
         'additional_details',
-        'ingredients',
-        'tags',
         'default',
         'status',
-        'draft',
         'tenant_id',
     ];
 
@@ -57,6 +52,10 @@ class Variant extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    public function images()
+    {
+        return $this->hasOne(ProductImage::class, 'variant_id');
     }
 
     public function options()
