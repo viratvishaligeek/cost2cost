@@ -40,6 +40,7 @@ class ProductApiController extends Controller
                     'short_description',
                     'top_product',
                     'featured_product',
+                    'brand_id',
                     'has_variation',
                     'status',
                     'tenant_id',
@@ -52,6 +53,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit(15)
@@ -95,6 +97,7 @@ class ProductApiController extends Controller
                     'short_description',
                     'top_product',
                     'featured_product',
+                    'brand_id',
                     'has_variation',
                     'status',
                     'tenant_id',
@@ -107,6 +110,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit(15)
@@ -150,6 +154,7 @@ class ProductApiController extends Controller
                     'short_description',
                     'top_product',
                     'featured_product',
+                    'brand_id',
                     'has_variation',
                     'status',
                     'tenant_id',
@@ -161,6 +166,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->latest('updated_at')
                 ->limit(15)
@@ -247,6 +253,7 @@ class ProductApiController extends Controller
                     'short_description',
                     'top_product',
                     'featured_product',
+                    'brand_id',
                     'has_variation',
                     'status',
                     'tenant_id',
@@ -262,6 +269,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->paginate($perPage, ['*'], 'page', $page);
@@ -315,6 +323,7 @@ class ProductApiController extends Controller
                     'slug',
                     'category_id',
                     'sub_category_id',
+                    'gst',
                     'mrp',
                     'sell_price',
                     'discount_type',
@@ -322,8 +331,12 @@ class ProductApiController extends Controller
                     'stock',
                     'stock_status',
                     'short_description',
+                    'top_product',
+                    'featured_product',
+                    'brand_id',
                     'has_variation',
                     'status',
+                    'tenant_id',
                 ])
                 ->where('tenant_id', $tenantId)
                 ->where('status', 'active')
@@ -337,12 +350,12 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->orderBy('updated_at', 'desc')
                 ->limit($limit)
                 ->get();
         });
-
         return response()->json([
             'status' => 200,
             'message' => 'success',
@@ -393,6 +406,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ]);
             switch ($request->sort_by) {
                 case 'lowtohigh':
@@ -489,13 +503,20 @@ class ProductApiController extends Controller
                     'id',
                     'name',
                     'slug',
+                    'brand_id',
                     'category_id',
                     'sub_category_id',
+                    'origin',
+                    'gst',
                     'mrp',
                     'sell_price',
+                    'discount_type',
                     'discount',
                     'stock',
                     'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
                     'status',
                 ])
                 ->where('status', 'active')
@@ -509,6 +530,7 @@ class ProductApiController extends Controller
                     'subcategory:id,name',
                     'brand:id,name',
                     'images',
+                    'variants.images'
                 ])
                 ->inRandomOrder()
                 ->limit(10)
