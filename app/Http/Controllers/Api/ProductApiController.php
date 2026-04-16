@@ -109,9 +109,9 @@ class ProductApiController extends Controller
             $minPrice = null;
             $maxPrice = null;
             // Check if product has variations
+            $variantImages = [];
             if ($product->variants && $product->variants->isNotEmpty()) {
                 $prices = [];
-                $variantImages = [];
                 foreach ($product->variants as $variant) {
                     $prices[] = $variant->sell_price;
                     $variantImages[] = $variant->images;

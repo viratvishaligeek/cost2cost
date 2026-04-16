@@ -74,6 +74,7 @@ return new class extends Migration
             $table->bigInteger('min_order')->nullable();
             $table->bigInteger('max_order')->nullable();
             $table->longText('additional_details')->nullable();
+            $table->longText('custom_table')->nullable();
             $table->boolean('default')->default(0);
             $table->enum('status', ['active', 'inactive', 'draft'])->default('draft')->index();
             $table->bigInteger('tenant_id')->index();

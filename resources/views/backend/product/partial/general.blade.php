@@ -10,7 +10,7 @@
                     <div class="card-body row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Product Name</label>
-                            <input class="form-control" name="name" value="{{ $data->name ?? old('name') }}"
+                            <input class="form-control" name="name" value="{{ old('name') ?? $data->name }}"
                                 type="text" required />
                         </div>
                         <div class="col-md-3">
@@ -18,14 +18,14 @@
                             <select class="form-select" name="brand_id">
                                 @foreach ($brands as $brand)
                                     <option value="{{ $brand->id }}"
-                                        {{ ($data->brand_id ?? old('brand_id')) == $brand->id ? 'selected' : '' }}>
+                                        {{ (old('brand_id') ?? $data->brand_id) == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Origin</label>
-                            <input class="form-control" name="origin" value="{{ $data->origin ?? old('origin') }}"
+                            <input class="form-control" name="origin" value="{{ old('origin') ?? $data->origin }}"
                                 type="text" />
                         </div>
                         <div class="col-md-4">
@@ -33,7 +33,7 @@
                             <select class="form-select" name="category_id" id="floatingSelectCategory">
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}"
-                                        {{ ($data->category_id ?? old('category_id')) == $cat->id ? 'selected' : '' }}>
+                                        {{ (old('category_id') ?? $data->category_id) == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}</option>
                                 @endforeach
                             </select>
@@ -44,7 +44,7 @@
                                 <option selected disabled>Select Sub Category</option>
                                 @foreach ($subCategories as $sub_cat)
                                     <option value="{{ $sub_cat->id }}"
-                                        {{ ($data->sub_category_id ?? old('sub_category_id')) == $sub_cat->id ? 'selected' : '' }}>
+                                        {{ (old('sub_category_id') ?? $data->sub_category_id) == $sub_cat->id ? 'selected' : '' }}>
                                         {{ $sub_cat->name }}</option>
                                 @endforeach
                             </select>
@@ -53,13 +53,13 @@
                             <label class="form-label">Status</label>
                             <select class="form-select" name="status">
                                 <option value="active"
-                                    {{ ($data->status ?? old('status')) == 'active' ? 'selected' : '' }}>Active
+                                    {{ (old('status') ?? $data->status) == 'active' ? 'selected' : '' }}>Active
                                 </option>
                                 <option value="inactive"
-                                    {{ ($data->status ?? old('status')) == 'inactive' ? 'selected' : '' }}>Inactive
+                                    {{ (old('status') ?? $data->status) == 'inactive' ? 'selected' : '' }}>Inactive
                                 </option>
                                 <option value="draft"
-                                    {{ ($data->status ?? old('status')) == 'draft' ? 'selected' : '' }}>Draft</option>
+                                    {{ (old('status') ?? $data->status) == 'draft' ? 'selected' : '' }}>Draft</option>
                             </select>
                         </div>
                     </div>
@@ -71,18 +71,52 @@
                     <div class="card-body row g-3">
                         <div class="col-12">
                             <label class="form-label">Tags</label>
-                            <textarea class="form-control" name="tags" rows="2">{{ $data->tags ?? old('tags') }}</textarea>
+                            <textarea class="form-control" name="tags" rows="2">{{ old('tags') ?? $data->tags }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Short Description</label>
-                            <textarea class="form-control tinymce-editor" name="short_description">{{ $data->short_description ?? old('short_description') }}</textarea>
+                            <textarea class="form-control tinymce-editor" name="short_description">{{ old('short_description') ?? $data->short_description }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Full Description</label>
-                            <textarea class="form-control tinymce-editor" name="description">{{ $data->description ?? old('description') }}</textarea>
+                            <textarea class="form-control tinymce-editor" name="description">{{ old('description') ?? $data->description }}</textarea>
                         </div>
                     </div>
                 </div>
+                @if ($data->has_variation == 'no')
+                    <div class="card shadow-lg mb-4 border-0 rounded-3">
+                        <div class="card-header bg-info">
+                            <h5 class="text-white">
+                                <i class="fa fa-table me-2"></i>Specification Table
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered" id="specTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45%">Title</th>
+                                        <th style="width: 45%">Value</th>
+                                        <th style="width: 10%">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="default-row">
+                                        <td><input type="text" class="form-control spec-key"
+                                                placeholder="e.g. Weight"></td>
+                                        <td><input type="text" class="form-control spec-value"
+                                                placeholder="e.g. 500g"></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary btn-sm" id="addRow">+ Add Row</button>
+                            <input type="hidden" name="custom_table" id="custom_table"
+                                value="{{ old('custom_table', $data->custom_table ?? '') }}">
+                        </div>
+                    </div>
+                @endif
                 <div class="card shadow-lg mb-4 border-0 rounded-3">
                     <div class="card-header bg-warning">
                         <h5 class="text-white"><i class="fa fa-image me-2"></i>Images & Gallery</h5>
@@ -95,7 +129,8 @@
                                     class="btn btn-warning text-white" type="button">
                                     <i class="fa fa-image"></i> Choose
                                 </button>
-                                <input id="featured_thumbnail" class="form-control" type="text" name="featured_image"
+                                <input id="featured_thumbnail" class="form-control" type="text"
+                                    name="featured_image"
                                     value="{{ old('featured_image', $images?->featured_image) }}">
                             </div>
                         </div>
@@ -118,8 +153,8 @@
                                     class="btn btn-warning text-white" type="button">
                                     <i class="fa fa-image"></i> Choose
                                 </button>
-                                <input id="gallery_thumbnail" class="form-control" type="text" name="gallery_image"
-                                    value="{{ old('gallery_image', $images?->gallery) }}">
+                                <input id="gallery_thumbnail" class="form-control" type="text"
+                                    name="gallery_image" value="{{ old('gallery_image', $images?->gallery) }}">
                             </div>
                         </div>
                         <div class="col-12">

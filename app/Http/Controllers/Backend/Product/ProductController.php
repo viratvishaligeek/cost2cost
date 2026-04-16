@@ -191,6 +191,7 @@ class ProductController extends Controller
             'max_order' => ['nullable', 'integer', 'gte:min_order'],
             'top_product' => ['nullable'],
             'featured_product' => ['nullable'],
+            'custom_table' => ['nullable'],
         ]);
         try {
             DB::beginTransaction();

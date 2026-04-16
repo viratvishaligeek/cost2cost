@@ -59,6 +59,7 @@ class VariantController extends Controller
             'lifestyle' => ['nullable', 'string'],
             'infographics' => ['nullable', 'string'],
             'video' => ['nullable', 'string'],
+            'custom_table' => ['nullable']
         ]);
 
         try {

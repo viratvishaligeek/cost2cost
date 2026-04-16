@@ -39,6 +39,7 @@ class Variant extends Model
         'min_order',
         'max_order',
         'additional_details',
+        'custom_table',
         'default',
         'status',
         'tenant_id',

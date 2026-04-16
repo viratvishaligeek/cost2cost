@@ -66,5 +66,57 @@
             });
         });
         // ------------------------------------------
+        $(document).ready(function() {
+            $('#addRow').click(function() {
+                let row = `
+                <tr>
+                    <td><input type="text" class="form-control spec-key"></td>
+                    <td><input type="text" class="form-control spec-value"></td>
+                    <td><button type="button" class="btn btn-danger btn-sm removeRow">X</button></td>
+                </tr>`;
+                $('#specTable tbody').append(row);
+            });
+            $(document).on('click', '.removeRow', function() {
+                $(this).closest('tr').remove();
+            });
+            let existing = $('#custom_table').val();
+
+            if (existing) {
+                try {
+                    let specs = JSON.parse(existing);
+
+                    if (specs.length > 0) {
+                        $('#specTable tbody').html('');
+
+                        specs.forEach(spec => {
+                            let row = `
+                            <tr>
+                                <td><input type="text" class="form-control spec-key" value="${spec.key}"></td>
+                                <td><input type="text" class="form-control spec-value" value="${spec.value}"></td>
+                                <td><button type="button" class="btn btn-danger btn-sm removeRow">X</button></td>
+                            </tr>`;
+                            $('#specTable tbody').append(row);
+                        });
+                    }
+                } catch (e) {
+                    console.error('Invalid JSON in custom_table');
+                }
+            }
+            $('form').on('submit', function() {
+                let specs = [];
+                $('#specTable tbody tr').each(function() {
+                    let key = $(this).find('.spec-key').val();
+                    let value = $(this).find('.spec-value').val();
+                    if (key && value) {
+                        specs.push({
+                            key,
+                            value
+                        });
+                    }
+                });
+                $('#custom_table').val(JSON.stringify(specs));
+            });
+
+        });
     </script>
 @endsection

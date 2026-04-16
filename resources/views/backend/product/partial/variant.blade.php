@@ -20,21 +20,21 @@
                 <div class="col-md-6">
                     <label class="form-label">Variant Name (Unique)</label>
                     <input type="text" class="form-control" name="name"
-                        value="{{ $variant->name ?? old('name') }}" required>
+                        value="{{ old('name') ?? $variant->name }}" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">SKU</label>
-                    <input type="text" class="form-control" name="sku" value="{{ $variant->sku ?? old('sku') }}">
+                    <input type="text" class="form-control" name="sku" value="{{ old('sku') ?? $variant->sku }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Status</label>
                     <select class="form-select" name="status">
-                        <option value="active" {{ $variant->status ?? old('status') == 'active' ? 'selected' : '' }}>
+                        <option value="active" {{ (old('status') ?? $variant->status) == 'active' ? 'selected' : '' }}>
                             Active</option>
                         <option value="inactive"
-                            {{ $variant->status ?? old('status') == 'inactive' ? 'selected' : '' }}>Inactive
+                            {{ (old('status') ?? $variant->status) == 'inactive' ? 'selected' : '' }}>Inactive
                         </option>
-                        <option value="draft" {{ $variant->status ?? old('status') == 'draft' ? 'selected' : '' }}>
+                        <option value="draft" {{ (old('status') ?? $variant->status) == 'draft' ? 'selected' : '' }}>
                             Draft</option>
                     </select>
                 </div>
@@ -42,69 +42,79 @@
                 <div class="col-md-2">
                     <label class="form-label">Base Price</label>
                     <input type="number" step="0.01" class="form-control" name="base_price"
-                        value="{{ $variant->base_price }}">
+                        value="{{ old('base_price') ?? $variant->base_price }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">GST</label>
-                    <input type="number" class="form-control" name="gst" value="{{ $variant->gst }}">
+                    <input type="number" class="form-control" name="gst" value="{{ old('gst') ?? $variant->gst }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">MRP</label>
                     <input type="number" step="0.01" class="form-control" name="mrp"
-                        value="{{ $variant->mrp }}">
+                        value="{{ old('mrp') ?? $variant->mrp }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Sell Price</label>
                     <input type="number" step="0.01" class="form-control" name="sell_price"
-                        value="{{ $variant->sell_price }}">
+                        value="{{ old('sell_price') ?? $variant->sell_price }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Discount Type</label>
                     <select class="form-select" name="discount_type">
-                        <option value="fixed" {{ $variant->discount_type == 'fixed' ? 'selected' : '' }}>
+                        <option value="fixed"
+                            {{ (old('discount_type') ?? $variant->discount_type) == 'fixed' ? 'selected' : '' }}>
                             Fixed
                         </option>
-                        <option value="percentage" {{ $variant->discount_type == 'percentage' ? 'selected' : '' }}>
+                        <option value="percentage"
+                            {{ (old('discount_type') ?? $variant->discount_type) == 'percentage' ? 'selected' : '' }}>
                             Percentage</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Discount Value</label>
-                    <input type="number" class="form-control" name="discount" value="{{ $variant->discount }}">
+                    <input type="number" class="form-control" name="discount"
+                        value="{{ old('discount') ?? $variant->discount }}">
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label">Stock Qty</label>
-                    <input type="number" class="form-control" name="stock" value="{{ $variant->stock }}">
+                    <input type="number" class="form-control" name="stock"
+                        value="{{ old('stock') ?? $variant->stock }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Low Stock Alert</label>
-                    <input type="number" class="form-control" name="low_stock" value="{{ $variant->low_stock }}">
+                    <input type="number" class="form-control" name="low_stock"
+                        value="{{ old('low_stock') ?? $variant->low_stock }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Min Order</label>
-                    <input type="number" class="form-control" name="min_order" value="{{ $variant->min_order }}">
+                    <input type="number" class="form-control" name="min_order"
+                        value="{{ old('min_order') ?? $variant->min_order }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Max Order</label>
-                    <input type="number" class="form-control" name="max_order" value="{{ $variant->max_order }}">
+                    <input type="number" class="form-control" name="max_order"
+                        value="{{ old('max_order') ?? $variant->max_order }}">
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Weight (gms)</label>
-                    <input type="number" class="form-control" name="weight" value="{{ $variant->weight }}">
+                    <input type="number" class="form-control" name="weight"
+                        value="{{ old('weight') ?? $variant->weight }}">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Dimension</label>
-                    <input type="text" class="form-control" name="dimension" value="{{ $variant->dimension }}">
+                    <input type="text" class="form-control" name="dimension"
+                        value="{{ old('dimension') ?? $variant->dimension }}">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">HSN Code</label>
-                    <input type="text" class="form-control" name="hsn_code" value="{{ $variant->hsn_code }}">
+                    <input type="text" class="form-control" name="hsn_code"
+                        value="{{ old('hsn_code') ?? $variant->hsn_code }}">
                 </div>
                 <div class="col-12">
                     <label class="form-label">Additional Details</label>
-                    <textarea class="form-control tinymce-editor" name="additional_details">{{ $variant->additional_details }}</textarea>
+                    <textarea class="form-control tinymce-editor" name="additional_details">{{ old('additional_details') ?? $variant->additional_details }}</textarea>
                 </div>
                 <div class="card shadow-lg mb-4 border-0 rounded-3">
                     <div class="card-header bg-warning">
@@ -219,6 +229,38 @@
                                     placeholder="https://video.com,https://anothervideo.com">
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="card shadow-lg mb-4 border-0 rounded-3">
+                    <div class="card-header bg-info">
+                        <h5 class="text-white">
+                            <i class="fa fa-table me-2"></i>Specification Table
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered" id="specTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">Title</th>
+                                    <th style="width: 45%">Value</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="default-row">
+                                    <td><input type="text" class="form-control spec-key"
+                                            placeholder="e.g. Weight"></td>
+                                    <td><input type="text" class="form-control spec-value"
+                                            placeholder="e.g. 500g"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-primary btn-sm" id="addRow">+ Add Row</button>
+                        <input type="hidden" name="custom_table" id="custom_table"
+                            value="{{ old('custom_table', $variant->custom_table ?? '') }}">
                     </div>
                 </div>
                 <div class="col-12 mt-4 text-end">
