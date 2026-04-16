@@ -21,7 +21,7 @@ class ProductApiController extends Controller
         }
         $perPage = (int) $request->per_page ?: 20;
         $page = (int) $request->page ?: 1;
-        $cacheKey = "prodducts_t{$tenantId}_p{$page}_pp{$perPage}_sort{$request->sort_by}";
+        $cacheKey = "products_t{$tenantId}_p{$page}_pp{$perPage}_sort{$request->sort_by}";
         $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $perPage, $request) {
             $query = Product::withoutGlobalScope('tenant_filter')
                 ->select(
@@ -71,7 +71,7 @@ class ProductApiController extends Controller
                 default:
                     $query->orderBy('updated_at', 'desc');
             }
-            return $query->paginate($perPage);
+            return $query->paginate($perPage, ['*'], 'page', $request->page ?? 1);
         });
         return response()->json([
             'status' => 200,

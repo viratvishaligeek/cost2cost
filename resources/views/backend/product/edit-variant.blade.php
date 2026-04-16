@@ -7,29 +7,13 @@
 
     <div class="row">
         <div class="col-12">
-            <ul class="nav nav-underline optionChainTableHeader gap-0 flex-nowrap scrollbar mb-4" id="productTab"
-                role="tablist">
-                <!-- GENERAL -->
-                <li class="nav-item">
-                    <a class="nav-link pt-0 text-nowrap ps-0 pe-3 {{ request()->routeIs('admin.product.edit') ? 'active' : '' }}"
-                        href="{{ route('admin.product.edit', encrypt($data->id)) }}">
-                        General Information
-                    </a>
-                </li>
-                <!-- VARIANTS -->
-                @foreach ($data->variants as $item)
-                    <li class="nav-item">
-                        <a class="nav-link pt-0 text-nowrap px-3
-                                     {{ request()->routeIs('admin.variant.edit') && $variant->id == $item->id ? 'active' : '' }}"
-                            href="{{ route('admin.variant.edit', encrypt($item->id)) }}">
-                            {{ $item->combo }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
+            {{-- tabs menu start here --}}
+            @include('backend.product.partial.tabs')
+            {{-- tabs menu end here --}}
+
             <div class="tab-content mt-4" id="productTabContent">
                 <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
-                    @include('backend.product.partial.edit_variant')
+                    @include('backend.product.partial.variant')
                 </div>
             </div>
         </div>

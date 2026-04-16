@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Option;
 use App\Models\OptionValue;
 use App\Models\Product;
+use App\Models\ProductFaq;
 use App\Models\ProductImage;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
@@ -238,5 +239,36 @@ class ProductController extends Controller
         return redirect()
             ->route('admin.product.index')
             ->with('success', 'Product deleted successfully');
+    }
+
+    public function getFaqs($id)
+    {
+        $pageName = 'Product FAQs';
+        $data = Product::findOrFail($this->decryptId($id));
+        $faqs = ProductFaq::where('product_id', $data->id)->get();
+        return view('backend.product.edit-faq', compact('data', 'faqs', 'pageName'));
+    }
+
+    public function updateFaqs(Request $request, $id)
+    {
+        $productId = decrypt($id);
+        $product = Product::findOrFail($productId);
+        $request->validate([
+            'faqs' => 'nullable|array',
+            'faqs.*.question' => 'required_with:faqs.*.answer|string|max:255',
+            'faqs.*.answer' => 'required_with:faqs.*.question|string',
+        ]);
+        $faqs = collect($request->faqs)
+            ->filter(function ($faq) {
+                return !empty($faq['question']) && !empty($faq['answer']);
+            })
+            ->values()
+            ->toArray();
+
+        $product->faqs = $faqs;
+        $product->save();
+        return redirect()
+            ->back()
+            ->with('success', 'FAQs updated successfully 🚀');
     }
 }

@@ -12,25 +12,30 @@
     @csrf @method('PATCH')
     <div class="card shadow-none border border-warning-300">
         <div class="card-header bg-warning-soft d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Variant Details: <span class="text-danger">{{ $variant->combo }}</span></h4>
+            <h4 class="mb-0">Variant Details: <span class="text-danger">{{ $variant->combo }}</span>
+            </h4>
         </div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Variant Name (Unique)</label>
-                    <input type="text" class="form-control" name="name" value="{{ $variant->name }}" required>
+                    <input type="text" class="form-control" name="name"
+                        value="{{ $variant->name ?? old('name') }}" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">SKU</label>
-                    <input type="text" class="form-control" name="sku" value="{{ $variant->sku }}">
+                    <input type="text" class="form-control" name="sku" value="{{ $variant->sku ?? old('sku') }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Status</label>
                     <select class="form-select" name="status">
-                        <option value="active" {{ $variant->status == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $variant->status == 'inactive' ? 'selected' : '' }}>Inactive
+                        <option value="active" {{ $variant->status ?? old('status') == 'active' ? 'selected' : '' }}>
+                            Active</option>
+                        <option value="inactive"
+                            {{ $variant->status ?? old('status') == 'inactive' ? 'selected' : '' }}>Inactive
                         </option>
-                        <option value="draft" {{ $variant->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="draft" {{ $variant->status ?? old('status') == 'draft' ? 'selected' : '' }}>
+                            Draft</option>
                     </select>
                 </div>
 

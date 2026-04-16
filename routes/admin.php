@@ -53,6 +53,8 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::post('options/get-values', [OptionController::class, 'getOptionValues'])->name('options.get-values');
         Route::resource('option-value', OptionValueController::class);
         Route::resource('product', ProductController::class);
+        Route::get('product/get-faqs/{id}', [ProductController::class, 'getFaqs'])->name('product.get-faqs');
+        Route::post('product/update-faqs/{id}', [ProductController::class, 'getVariants'])->name('product.update-faqs');
         Route::resource('variant', VariantController::class);
     });
 

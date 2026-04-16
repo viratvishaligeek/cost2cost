@@ -7,27 +7,13 @@
 
     <div class="row">
         <div class="col-12">
-            <ul class="nav nav-underline optionChainTableHeader gap-0 flex-nowrap scrollbar mb-4" id="productTab"
-                role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link pt-0 text-nowrap active ps-0 pe-3 " id="tab-chart" href="#tab-general"
-                        data-bs-toggle="tab" role="tab" aria-controls="tab-general" aria-selected="true">General
-                        Information</a>
-                </li>
-                @if ($data->has_variation == 'yes')
-                    @foreach ($data->variants as $variant)
-                        <li class="nav-item">
-                            <a class="nav-link pt-0 text-nowrap px-3"
-                                href="{{ route('admin.variant.edit', encrypt($variant->id)) }}">
-                                {{ $variant->combo }}
-                            </a>
-                        </li>
-                    @endforeach
-                @endif
-            </ul>
+            {{-- tabs menu start here --}}
+            @include('backend.product.partial.tabs')
+            {{-- tabs menu end here --}}
+
             <div class="tab-content mt-4" id="productTabContent">
                 <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
-                    @include('backend.product.partial.edit_general')
+                    @include('backend.product.partial.general')
                 </div>
             </div>
         </div>

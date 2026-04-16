@@ -69,7 +69,7 @@
                     </div>
                     <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProductModal">
                         <span class="fas fa-plus me-2"> </span> Add Product</button>
-                    @include('backend.product.partial.add-from')
+                    @include('backend.product.partial.form')
                 </div>
             </div>
         </div>

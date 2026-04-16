@@ -18,7 +18,7 @@
                             <select class="form-select" name="brand_id">
                                 @foreach ($brands as $brand)
                                     <option value="{{ $brand->id }}"
-                                        {{ $data->brand_id ?? old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                        {{ ($data->brand_id ?? old('brand_id')) == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}</option>
                                 @endforeach
                             </select>
@@ -28,13 +28,12 @@
                             <input class="form-control" name="origin" value="{{ $data->origin ?? old('origin') }}"
                                 type="text" />
                         </div>
-
                         <div class="col-md-4">
                             <label class="form-label">Category</label>
                             <select class="form-select" name="category_id" id="floatingSelectCategory">
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}"
-                                        {{ $data->category_id ?? old('category_id') == $cat->id ? 'selected' : '' }}>
+                                        {{ ($data->category_id ?? old('category_id')) == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}</option>
                                 @endforeach
                             </select>
@@ -45,7 +44,7 @@
                                 <option selected disabled>Select Sub Category</option>
                                 @foreach ($subCategories as $sub_cat)
                                     <option value="{{ $sub_cat->id }}"
-                                        {{ $data->sub_category_id ?? old('sub_category_id') == $sub_cat->id ? 'selected' : '' }}>
+                                        {{ ($data->sub_category_id ?? old('sub_category_id')) == $sub_cat->id ? 'selected' : '' }}>
                                         {{ $sub_cat->name }}</option>
                                 @endforeach
                             </select>
@@ -54,13 +53,13 @@
                             <label class="form-label">Status</label>
                             <select class="form-select" name="status">
                                 <option value="active"
-                                    {{ $data->status ?? old('status') == 'active' ? 'selected' : '' }}>Active
+                                    {{ ($data->status ?? old('status')) == 'active' ? 'selected' : '' }}>Active
                                 </option>
                                 <option value="inactive"
-                                    {{ $data->status ?? old('status') == 'inactive' ? 'selected' : '' }}>Inactive
+                                    {{ ($data->status ?? old('status')) == 'inactive' ? 'selected' : '' }}>Inactive
                                 </option>
                                 <option value="draft"
-                                    {{ $data->status ?? old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                                    {{ ($data->status ?? old('status')) == 'draft' ? 'selected' : '' }}>Draft</option>
                             </select>
                         </div>
                     </div>
@@ -225,11 +224,11 @@
                                 <label class="form-label">Discount Type</label>
                                 <select class="form-select" name="discount_type">
                                     <option value="fixed"
-                                        {{ old('discount_type') ?? $data->discount_type == 'fixed' ? 'selected' : '' }}>
+                                        {{ (old('discount_type') ?? $data->discount_type) == 'fixed' ? 'selected' : '' }}>
                                         Fixed
                                     </option>
                                     <option value="percentage"
-                                        {{ old('discount_type') ?? $data->discount_type == 'percentage' ? 'selected' : '' }}>
+                                        {{ (old('discount_type') ?? $data->discount_type) == 'percentage' ? 'selected' : '' }}>
                                         Percentage</option>
                                 </select>
                             </div>
@@ -272,10 +271,10 @@
                                 <label class="form-label">Refundable</label>
                                 <select class="form-select" name="refundable">
                                     <option value="no"
-                                        {{ old('refundable') ?? $data->refundable == 'no' ? 'selected' : '' }}>No
+                                        {{ (old('refundable') ?? $data->refundable) == 'no' ? 'selected' : '' }}>No
                                     </option>
                                     <option value="yes"
-                                        {{ old('refundable') ?? $data->refundable == 'yes' ? 'selected' : '' }}>Yes
+                                        {{ (old('refundable') ?? $data->refundable) == 'yes' ? 'selected' : '' }}>Yes
                                     </option>
                                 </select>
                             </div>
@@ -293,14 +292,14 @@
                                 <label class="form-label">Stock Status</label>
                                 <select class="form-select" name="stock_status">
                                     <option value="in_stock"
-                                        {{ old('stock_status') ?? $data->stock_status == 'in_stock' ? 'selected' : '' }}>
+                                        {{ (old('stock_status') ?? $data->stock_status) == 'in_stock' ? 'selected' : '' }}>
                                         In Stock
                                     </option>
                                     <option value="out_of_stock"
-                                        {{ old('stock_status') ?? $data->stock_status == 'out_of_stock' ? 'selected' : '' }}>
+                                        {{ (old('stock_status') ?? $data->stock_status) == 'out_of_stock' ? 'selected' : '' }}>
                                         Out of Stock</option>
                                     <option value="low_stock"
-                                        {{ old('stock_status') ?? $data->stock_status == 'low_stock' ? 'selected' : '' }}>
+                                        {{ (old('stock_status') ?? $data->stock_status) == 'low_stock' ? 'selected' : '' }}>
                                         Low Stock
                                     </option>
                                 </select>
