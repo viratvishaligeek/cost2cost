@@ -1,9 +1,12 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -31,5 +34,37 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (Throwable $e, $request) {
+            if ($request->is('api/*')) {
+                // Validation Error
+                if ($e instanceof ValidationException) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => $e->errors(),
+                        'errors' => $e->errors(),
+                    ], 422);
+                }
+                // Unauthenticated
+                if ($e instanceof AuthenticationException) {
+                    return response()->json([
+                        'status' => 401,
+                        'message' => 'Unauthenticated, Please Login first..',
+                    ], 401);
+                }
+                // Route Not Found
+                if ($e instanceof NotFoundHttpException) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'API route not found. Please check typo Error or API url',
+                    ], 404);
+                }
+                // Default Error
+                return response()->json([
+                    'status' => 500,
+                    'message' => config('app.debug')
+                        ? $e->getMessage()
+                        : 'Something went wrong',
+                ], 500);
+            }
+        });
     })->create();

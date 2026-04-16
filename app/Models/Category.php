@@ -43,15 +43,10 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    // public function products()
-    // {
-    //     return $this->hasMany(Product::class, 'category_id');
-    // }
-
-    // public function productCount()
-    // {
-    //     return $this->hasMany(Product::class, 'category_id')->count();
-    // }
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id');
+    }
 
     protected $hidden = [
         'tenant_id',

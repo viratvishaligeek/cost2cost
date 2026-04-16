@@ -43,25 +43,22 @@
     </script>
     <script>
         let index = 1;
-
-        // ADD FAQ
         $('#add-faq').click(function() {
             let html = `
         <div class="faq-item mb-3 border-top pt-3">
-            <input type="text" name="faqs[${index}][question]"
+            <input type="text" name="faqs[new_${index}][question]"
                 class="form-control mb-2" placeholder="Enter Question">
-
-            <textarea name="faqs[${index}][answer]"
+            <textarea name="faqs[new_${index}][answer]"
                 class="form-control" placeholder="Enter Answer"></textarea>
-
             <button type="button" class="btn btn-sm btn-danger mt-2 remove-faq">
                 Remove
             </button>
         </div>
-        `;
+            `;
             $('#faq-wrapper').append(html);
             index++;
         });
+
         $(document).on('click', '.remove-faq', function() {
             $(this).closest('.faq-item').remove();
         });

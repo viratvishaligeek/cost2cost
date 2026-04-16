@@ -51,9 +51,6 @@ class ProductController extends Controller
 
                     return '
                     <div class="d-flex">
-                        <a href="' . route('admin.product.show', $id) . '" class="btn btn-subtle-warning m-1 btn-sm">
-                            <span class="fas fa-eye"></span>
-                        </a>
                         <a href="' . route('admin.product.edit', $id) . '" class="btn btn-subtle-primary m-1 btn-sm">
                             <span class="fas fa-edit"></span>
                         </a>
@@ -252,24 +249,36 @@ class ProductController extends Controller
 
     public function updateFaqs(Request $request, $id)
     {
-        $productId = decrypt($id);
-        $product = Product::findOrFail($productId);
-        $request->validate([
-            'faqs' => 'nullable|array',
-            'faqs.*.question' => 'required_with:faqs.*.answer|string|max:255',
-            'faqs.*.answer' => 'required_with:faqs.*.question|string',
-        ]);
-        $faqs = collect($request->faqs)
-            ->filter(function ($faq) {
-                return !empty($faq['question']) && !empty($faq['answer']);
-            })
-            ->values()
+        $productId = $this->decryptId($id);
+        $submittedFaqs = $request->faqs ?? [];
+        $existingIds = ProductFaq::where('product_id', $productId)
+            ->pluck('id')
             ->toArray();
+        $keepIds = [];
+        foreach ($submittedFaqs as $faq) {
+            if (empty($faq['question']) && empty($faq['answer'])) {
+                continue;
+            }
+            if (!empty($faq['id'])) {
+                ProductFaq::where('id', $faq['id'])->update([
+                    'question' => $faq['question'],
+                    'answer' => $faq['answer'],
+                ]);
+                $keepIds[] = $faq['id'];
+            } else {
+                $new = ProductFaq::create([
+                    'product_id' => $productId,
+                    'question' => $faq['question'],
+                    'answer' => $faq['answer'],
+                ]);
 
-        $product->faqs = $faqs;
-        $product->save();
-        return redirect()
-            ->back()
-            ->with('success', 'FAQs updated successfully 🚀');
+                $keepIds[] = $new->id;
+            }
+        }
+        $deleteIds = array_diff($existingIds, $keepIds);
+        if (!empty($deleteIds)) {
+            ProductFaq::whereIn('id', $deleteIds)->delete();
+        }
+        return back()->with('success', 'FAQs updated successfully');
     }
 }

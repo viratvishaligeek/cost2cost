@@ -47,14 +47,24 @@ Route::prefix('admin')->as('admin.')->group(function () {
 
         // product module routes
         Route::resource('brand', BrandController::class);
+
+        // category module routes
         Route::resource('category', CategoryController::class);
+
+        // sub category module routes
         Route::get('product/get-subcategories/{id}', [CategoryController::class, 'getSubCategories'])->name('product.get-subcategories');
         Route::resource('options', OptionController::class);
+
+        // option module routes
         Route::post('options/get-values', [OptionController::class, 'getOptionValues'])->name('options.get-values');
         Route::resource('option-value', OptionValueController::class);
+
+        // sub category module routes
         Route::resource('product', ProductController::class);
         Route::get('product/get-faqs/{id}', [ProductController::class, 'getFaqs'])->name('product.get-faqs');
-        Route::post('product/update-faqs/{id}', [ProductController::class, 'getVariants'])->name('product.update-faqs');
+        Route::patch('product/update-faqs/{id}', [ProductController::class, 'updateFaqs'])->name('product.update-faqs');
+
+        // variant module routes
         Route::resource('variant', VariantController::class);
     });
 

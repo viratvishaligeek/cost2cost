@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductFaq;
 use Illuminate\Http\Request;
@@ -10,7 +11,348 @@ use Illuminate\Support\Facades\Cache;
 
 class ProductApiController extends Controller
 {
-    public function index(Request $request)
+    // featured product
+    public function featuredProducts(Request $request)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $cacheKey = "featured_products_t{$tenantId}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'gst',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
+                    'has_variation',
+                    'status',
+                    'tenant_id',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->where('featured_product', 1)
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->orderBy('updated_at', 'desc')
+                ->limit(15)
+                ->get();
+        });
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'count' => $data->count(),
+            'data' => $data,
+        ], 200);
+    }
+
+    // top product
+    public function topProducts(Request $request)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $cacheKey = "top_products_t{$tenantId}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'gst',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
+                    'has_variation',
+                    'status',
+                    'tenant_id',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->where('top_product', 1)
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->orderBy('updated_at', 'desc')
+                ->limit(15)
+                ->get();
+        });
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'count' => $data->count(),
+            'data' => $data,
+        ], 200);
+    }
+
+    // recent product
+    public function recentProducts(Request $request)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $cacheKey = "recent_products_t{$tenantId}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'gst',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
+                    'has_variation',
+                    'status',
+                    'tenant_id',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->latest('updated_at')
+                ->limit(15)
+                ->get();
+        });
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'count' => $data->count(),
+            'data' => $data,
+        ], 200);
+    }
+
+    // all product categories
+    public function category(Request $request)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $cacheKey = "product_categories_t{$tenantId}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId) {
+            return Category::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'parent_id',
+                    'tenant_id',
+                    'is_parent',
+                    'featured_image',
+                    'description',
+                    'status',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->withCount('products')
+                ->where('status', 'active')
+                ->orderBy('updated_at', 'desc')
+                ->get();
+        });
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'count' => $data->count(),
+            'data' => $data,
+        ], 200);
+    }
+
+    // category products
+    public function categoryProducts(Request $request, $id)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $perPage = (int) ($request->per_page ?? 15);
+        $page = (int) ($request->page ?? 1);
+        // safety cap
+        $perPage = min($perPage, 50);
+        $cacheKey = "category_products_t{$tenantId}_cat{$id}_p{$page}_pp{$perPage}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $id, $perPage, $page) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'gst',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
+                    'has_variation',
+                    'status',
+                    'tenant_id',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->where(function ($q) use ($id) {
+                    $q->where('category_id', $id)
+                        ->orWhere('sub_category_id', $id);
+                })
+                ->where('status', 'active')
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->orderBy('updated_at', 'desc')
+                ->paginate($perPage, ['*'], 'page', $page);
+        });
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'data' => $data->items(),
+            'pagination' => [
+                'total' => $data->total(),
+                'per_page' => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'last_page' => $data->lastPage(),
+                'next_page_url' => $data->nextPageUrl(),
+                'prev_page_url' => $data->previousPageUrl(),
+            ],
+        ], 200);
+    }
+
+    // search function
+    public function search(Request $request, $query)
+    {
+        $tenantId = $request->tenant_id;
+        if (!$tenantId) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Tenant Details is required'
+            ], 400);
+        }
+        $query = trim($query);
+        if (strlen($query) < 3) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Search query must be at least 3 characters'
+            ], 422);
+        }
+        if (preg_match('/\s/', $query)) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Spaces are not allowed in search query'
+            ], 422);
+        }
+        $limit = (int) ($request->limit ?? 5);
+        $limit = min($limit, 50);
+        $cacheKey = "search_t{$tenantId}_q" . md5($query) . "_limit{$limit}";
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $query, $limit) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'has_variation',
+                    'status',
+                ])
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                        ->orWhere('slug', 'LIKE', "%{$query}%")
+                        ->orWhere('tags', 'LIKE', "%{$query}%");
+                })
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->orderBy('updated_at', 'desc')
+                ->limit($limit)
+                ->get();
+        });
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'success',
+            'count' => $data->count(),
+            'data' => $data,
+        ], 200);
+    }
+
+    // all product list
+    public function productList(Request $request)
     {
         $tenantId = $request->tenant_id;
         if (!$tenantId) {
@@ -88,27 +430,22 @@ class ProductApiController extends Controller
         ], 200);
     }
 
-
+    // product detail response function
     public function productDetail(Request $request, $slug)
     {
         try {
-            $product = Product::where('slug', $slug)
+            $product = Product::withoutGlobalScope('tenant_filter')
+                ->where('slug', $slug)
                 ->with(['variants.options.values', 'images', 'category'])
                 ->where('status', 'active')
                 ->firstOrFail();
-            //review eligibility
             $reviewEligible = false;
-            // Get filtered variant options
             $filteredOptions = $this->getFilteredOptions($product);
-            // Get FAQs for the product
             $faq = ProductFaq::where('product_id', $product->id)
                 ->select('id', 'question', 'answer', 'created_at')->get();
-            // Get product reviews
             $review = [];
-            // ----------------------------------------------------
             $minPrice = null;
             $maxPrice = null;
-            // Check if product has variations
             $variantImages = [];
             if ($product->variants && $product->variants->isNotEmpty()) {
                 $prices = [];
@@ -121,9 +458,7 @@ class ProductApiController extends Controller
                     $maxPrice = max($prices);
                 }
             }
-            // If there are no variations, fallback to the product's base price
             $productPrice = $minPrice && $maxPrice ? "₹$minPrice - ₹$maxPrice" : $product->sell_price;
-            // ----------------------------------------------------
             $productKey = [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -149,10 +484,33 @@ class ProductApiController extends Controller
                 'top_product' => $product->top_product,
                 'featured_product' => $product->featured_product,
             ];
-            $related = Product::where('tenant_id', $request->tenant_id)
-                ->where('category_id', $product->category_id)
-                ->where('id', '!=', $product->id)
+            $related = Product::withoutGlobalScope('tenant_filter')
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'mrp',
+                    'sell_price',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'status',
+                ])
                 ->where('status', 'active')
+                ->where('id', '!=', $product->id)
+                ->where(function ($q) use ($product) {
+                    $q->where('category_id', $product->category_id)
+                        ->orWhere('sub_category_id', $product->sub_category_id);
+                })
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images',
+                ])
+                ->inRandomOrder()
                 ->limit(10)
                 ->get();
             // Return the response
@@ -181,36 +539,25 @@ class ProductApiController extends Controller
         }
     }
 
+    // get filtered options
     private function getFilteredOptions($product)
     {
         $options = [];
-
-        // 🔥 collect all value_ids first
         $valueIds = [];
-
         foreach ($product->variants as $variant) {
             foreach ($variant->options as $option) {
                 $valueIds[] = $option->pivot->value_id;
             }
         }
-
         $valueIds = array_unique($valueIds);
-
-        // 🔥 fetch all values in one query
         $values = \App\Models\OptionValue::whereIn('id', $valueIds)
             ->get()
             ->keyBy('id');
-
         foreach ($product->variants as $variant) {
-
             foreach ($variant->options as $option) {
-
                 $valueId = $option->pivot->value_id;
-
                 if (!isset($values[$valueId])) continue;
-
                 $value = $values[$valueId];
-
                 if (!isset($options[$option->id])) {
                     $options[$option->id] = [
                         'id' => $option->id,
@@ -218,18 +565,15 @@ class ProductApiController extends Controller
                         'values' => []
                     ];
                 }
-
                 $options[$option->id]['values'][$value->id] = [
                     'id' => $value->id,
                     'value' => $value->name
                 ];
             }
         }
-
         foreach ($options as &$opt) {
             $opt['values'] = array_values($opt['values']);
         }
-
         return array_values($options);
     }
 }
