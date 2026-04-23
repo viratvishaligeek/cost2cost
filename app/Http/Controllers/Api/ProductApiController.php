@@ -280,9 +280,8 @@ class ProductApiController extends Controller
                     'category:id,name',
                     'subcategory:id,name',
                     'brand:id,name',
-                    'images:id,product_id,image',
-                    'variants:id,product_id',
-                    'variants.images:id,variant_id,image'
+                    'images',
+                    'variants.images'
                 ])
                 ->latest('updated_at')
                 ->paginate($perPage, ['*'], 'page', $page);
