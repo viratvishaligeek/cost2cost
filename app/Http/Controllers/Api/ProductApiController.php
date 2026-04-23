@@ -246,53 +246,47 @@ class ProductApiController extends Controller
 
         $categoryId = $category->id;
 
-        $cacheKey = "category_products:tenant={$tenantId}:category={$categoryId}:page={$page}:perPage={$perPage}";
-
-        $products = Cache::tags([
-            "tenant:{$tenantId}",
-            "category:{$categoryId}"
-        ])
-            ->remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $categoryId, $perPage, $page) {
-
-                return Product::withoutGlobalScope('tenant_filter')
-                    ->where('tenant_id', $tenantId)
-                    ->where('status', 'active')
-                    ->where(function ($q) use ($categoryId) {
-                        $q->where('category_id', $categoryId)
-                            ->orWhere('sub_category_id', $categoryId);
-                    })
-                    ->select([
-                        'id',
-                        'name',
-                        'slug',
-                        'category_id',
-                        'sub_category_id',
-                        'gst',
-                        'mrp',
-                        'sell_price',
-                        'discount_type',
-                        'discount',
-                        'stock',
-                        'stock_status',
-                        'short_description',
-                        'top_product',
-                        'featured_product',
-                        'brand_id',
-                        'has_variation',
-                        'status',
-                        'tenant_id'
-                    ])
-                    ->with([
-                        'category:id,name',
-                        'subcategory:id,name',
-                        'brand:id,name',
-                        'images:id,product_id,image',
-                        'variants:id,product_id',
-                        'variants.images:id,variant_id,image'
-                    ])
-                    ->latest('updated_at')
-                    ->paginate($perPage, ['*'], 'page', $page);
-            });
+        $cacheKey = "category_products_{$tenantId}_{$categoryId}_{$page}_{$perPage}";
+        $products = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $categoryId, $perPage, $page) {
+            return Product::withoutGlobalScope('tenant_filter')
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->where(function ($q) use ($categoryId) {
+                    $q->where('category_id', $categoryId)
+                        ->orWhere('sub_category_id', $categoryId);
+                })
+                ->select([
+                    'id',
+                    'name',
+                    'slug',
+                    'category_id',
+                    'sub_category_id',
+                    'gst',
+                    'mrp',
+                    'sell_price',
+                    'discount_type',
+                    'discount',
+                    'stock',
+                    'stock_status',
+                    'short_description',
+                    'top_product',
+                    'featured_product',
+                    'brand_id',
+                    'has_variation',
+                    'status',
+                    'tenant_id'
+                ])
+                ->with([
+                    'category:id,name',
+                    'subcategory:id,name',
+                    'brand:id,name',
+                    'images:id,product_id,image',
+                    'variants:id,product_id',
+                    'variants.images:id,variant_id,image'
+                ])
+                ->latest('updated_at')
+                ->paginate($perPage, ['*'], 'page', $page);
+        });
 
         return response()->json([
             'status' => 200,
