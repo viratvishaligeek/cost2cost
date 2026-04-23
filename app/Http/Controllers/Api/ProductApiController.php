@@ -221,73 +221,169 @@ class ProductApiController extends Controller
     }
 
     // category products
-    public function categoryProducts(Request $request, $id)
+    public function categoryProducts(Request $request, string $slug)
     {
-        $tenantId = $request->tenant_id;
-        if (!$tenantId) {
+        $validated = $request->validate([
+            'tenant_id' => 'required|integer|exists:tenants,id',
+            'per_page' => 'nullable|integer|min:1|max:50',
+            'page' => 'nullable|integer|min:1',
+        ]);
+
+        $tenantId = $validated['tenant_id'];
+        $perPage = $validated['per_page'] ?? 15;
+        $page = $validated['page'] ?? 1;
+
+        $category = Category::select('id')
+            ->where('slug', $slug)
+            ->first();
+
+        if (!$category) {
             return response()->json([
-                'status' => 400,
-                'message' => 'Tenant Details is required'
-            ], 400);
+                'status' => 404,
+                'message' => 'Category not found'
+            ], 404);
         }
-        $perPage = (int) ($request->per_page ?? 15);
-        $page = (int) ($request->page ?? 1);
-        // safety cap
-        $perPage = min($perPage, 50);
-        $cacheKey = "category_products_t{$tenantId}_cat{$id}_p{$page}_pp{$perPage}";
-        $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $id, $perPage, $page) {
-            return Product::withoutGlobalScope('tenant_filter')
-                ->select([
-                    'id',
-                    'name',
-                    'slug',
-                    'category_id',
-                    'sub_category_id',
-                    'gst',
-                    'mrp',
-                    'sell_price',
-                    'discount_type',
-                    'discount',
-                    'stock',
-                    'stock_status',
-                    'short_description',
-                    'top_product',
-                    'featured_product',
-                    'brand_id',
-                    'has_variation',
-                    'status',
-                    'tenant_id',
-                ])
-                ->where('tenant_id', $tenantId)
-                ->where(function ($q) use ($id) {
-                    $q->where('category_id', $id)
-                        ->orWhere('sub_category_id', $id);
-                })
-                ->where('status', 'active')
-                ->with([
-                    'category:id,name',
-                    'subcategory:id,name',
-                    'brand:id,name',
-                    'images',
-                    'variants.images'
-                ])
-                ->orderBy('updated_at', 'desc')
-                ->paginate($perPage, ['*'], 'page', $page);
-        });
+
+        $categoryId = $category->id;
+
+        $cacheKey = "category_products:tenant={$tenantId}:category={$categoryId}:page={$page}:perPage={$perPage}";
+
+        $products = Cache::tags([
+            "tenant:{$tenantId}",
+            "category:{$categoryId}"
+        ])
+            ->remember($cacheKey, now()->addMinutes(30), function () use ($tenantId, $categoryId, $perPage, $page) {
+
+                return Product::withoutGlobalScope('tenant_filter')
+                    ->where('tenant_id', $tenantId)
+                    ->where('status', 'active')
+                    ->where(function ($q) use ($categoryId) {
+                        $q->where('category_id', $categoryId)
+                            ->orWhere('sub_category_id', $categoryId);
+                    })
+                    ->select([
+                        'id',
+                        'name',
+                        'slug',
+                        'category_id',
+                        'sub_category_id',
+                        'gst',
+                        'mrp',
+                        'sell_price',
+                        'discount_type',
+                        'discount',
+                        'stock',
+                        'stock_status',
+                        'short_description',
+                        'top_product',
+                        'featured_product',
+                        'brand_id',
+                        'has_variation',
+                        'status',
+                        'tenant_id'
+                    ])
+                    ->with([
+                        'category:id,name',
+                        'subcategory:id,name',
+                        'brand:id,name',
+                        'images:id,product_id,image',
+                        'variants:id,product_id',
+                        'variants.images:id,variant_id,image'
+                    ])
+                    ->latest('updated_at')
+                    ->paginate($perPage, ['*'], 'page', $page);
+            });
+
         return response()->json([
             'status' => 200,
             'message' => 'success',
-            'data' => $data->items(),
+            'data' => $products->items(),
             'pagination' => [
-                'total' => $data->total(),
-                'per_page' => $data->perPage(),
-                'current_page' => $data->currentPage(),
-                'last_page' => $data->lastPage(),
-                'next_page_url' => $data->nextPageUrl(),
-                'prev_page_url' => $data->previousPageUrl(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'next_page_url' => $products->nextPageUrl(),
+                'prev_page_url' => $products->previousPageUrl(),
             ],
-        ], 200);
+        ]);
     }
+    // public function categoryProducts(Request $request, $slug)
+    // {
+    //     $tenantId = $request->tenant_id;
+    //     if (!$tenantId) {
+    //         return response()->json([
+    //             'status' => 400,
+    //             'message' => 'Tenant Details is required'
+    //         ], 400);
+    //     }
+
+    //     $categoryData = Category::where('slug', $slug)->first();
+    //     if (!$categoryData) {
+    //         return response()->json([
+    //             'status' => 400,
+    //             'message' => 'Category Not Found'
+    //         ], 400);
+    //     }
+    //     $categoryId = $categoryData->id;
+    //     $perPage = (int) ($request->per_page ?? 15);
+    //     $page = (int) ($request->page ?? 1);
+    //     // safety cap
+    //     $perPage = min($perPage, 50);
+    //     $cacheKey = "category_products_t{$tenantId}_cat{$categoryId}_p{$page}_pp{$perPage}";
+    //     $data = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($tenantId, $categoryId, $perPage, $page) {
+    //         return Product::withoutGlobalScope('tenant_filter')
+    //             ->select([
+    //                 'id',
+    //                 'name',
+    //                 'slug',
+    //                 'category_id',
+    //                 'sub_category_id',
+    //                 'gst',
+    //                 'mrp',
+    //                 'sell_price',
+    //                 'discount_type',
+    //                 'discount',
+    //                 'stock',
+    //                 'stock_status',
+    //                 'short_description',
+    //                 'top_product',
+    //                 'featured_product',
+    //                 'brand_id',
+    //                 'has_variation',
+    //                 'status',
+    //                 'tenant_id',
+    //             ])
+    //             ->where('tenant_id', $tenantId)
+    //             ->where(function ($q) use ($categoryId) {
+    //                 $q->where('category_id', $categoryId)
+    //                     ->orWhere('sub_category_id', $categoryId);
+    //             })
+    //             ->where('status', 'active')
+    //             ->with([
+    //                 'category:id,name',
+    //                 'subcategory:id,name',
+    //                 'brand:id,name',
+    //                 'images',
+    //                 'variants.images'
+    //             ])
+    //             ->orderBy('updated_at', 'desc')
+    //             ->paginate($perPage, ['*'], 'page', $page);
+    //     });
+    //     return response()->json([
+    //         'status' => 200,
+    //         'message' => 'success',
+    //         'data' => $data->items(),
+    //         'pagination' => [
+    //             'total' => $data->total(),
+    //             'per_page' => $data->perPage(),
+    //             'current_page' => $data->currentPage(),
+    //             'last_page' => $data->lastPage(),
+    //             'next_page_url' => $data->nextPageUrl(),
+    //             'prev_page_url' => $data->previousPageUrl(),
+    //         ],
+    //     ], 200);
+    // }
 
     // search function
     public function search(Request $request, $query)

@@ -62,9 +62,9 @@ class DashboardController extends Controller
 
             return back()->with('success', 'Cache cleared successfully!');
         } catch (\Exception $e) {
-            Log::error('Cache clear error: '.$e->getMessage());
+            Log::error('Cache clear error: ' . $e->getMessage());
 
-            return back()->with('error', 'Failed to clear cache. Please try again : '.$e->getMessage());
+            return back()->with('error', 'Failed to clear cache. Please try again : ' . $e->getMessage());
         }
     }
 

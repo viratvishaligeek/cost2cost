@@ -129,18 +129,28 @@ return [
                 'can' => ['general-setting'],
             ],
             [
-                'name' => 'SEO Config',
-                'route' => 'admin.setting.edit',
-                'active' => 'admin.setting.edit',
-                'params' => 'seo-config',
-                'can' => ['seo-setting'],
-            ],
-            [
                 'name' => 'Email',
                 'route' => 'admin.setting.edit',
                 'active' => 'admin.setting.edit',
                 'params' => 'email',
                 'can' => ['email-setting'],
+            ],
+        ],
+    ],
+
+    // Global SEO Config menu
+    [
+        'title' => 'Seo Config',
+        'icon' => 'fa-solid fa-rss',
+        'can' => ['seo-setting'],
+
+        'children' => [
+            [
+                'name' => 'Product',
+                'route' => 'admin.setting.edit',
+                'active' => 'admin.setting.edit',
+                'params' => 'global',
+                'can' => ['global-setting'],
             ],
         ],
     ],

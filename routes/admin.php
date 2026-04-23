@@ -3,6 +3,7 @@
 use App\Http\Controllers\Backend\AdvanceModule\RoleController;
 use App\Http\Controllers\Backend\AdvanceModule\TeamController;
 use App\Http\Controllers\Backend\AdvanceModule\TenantController;
+use App\Http\Controllers\Backend\AllSeoController;
 use App\Http\Controllers\Backend\Auth\AuthController;
 use App\Http\Controllers\Backend\Blogger\BlogCategoryController;
 use App\Http\Controllers\Backend\Blogger\BlogController;
@@ -38,9 +39,6 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::resource('team', TeamController::class);
         Route::resource('role', RoleController::class);
 
-        // setting module routes
-        Route::resource('setting', SettingController::class);
-
         // blogging module routes
         Route::resource('blog-category', BlogCategoryController::class);
         Route::resource('blog', BlogController::class);
@@ -66,6 +64,10 @@ Route::prefix('admin')->as('admin.')->group(function () {
 
         // variant module routes
         Route::resource('variant', VariantController::class);
+
+        // setting module routes
+        Route::resource('setting', SettingController::class);
+        Route::resource('seo-plugin', AllSeoController::class);
     });
 
     // ------------- laravel file manager
